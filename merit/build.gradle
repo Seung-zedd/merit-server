@@ -26,6 +26,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	// 검증 디펜던시
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// p6spy 디펜던시 (쿼리 파라미터 출력)
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
