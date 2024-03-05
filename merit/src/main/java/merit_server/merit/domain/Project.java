@@ -1,7 +1,8 @@
 package merit_server.merit.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,7 +11,11 @@ import java.util.List;
 import java.util.Set;
 
 @Entity(name = "PROJECT")
-@Data
+@Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
 public class Project {
 
     @Id
@@ -28,6 +33,7 @@ public class Project {
             name = "SKILL_LIST_RQ",
             joinColumns = @JoinColumn(name = "PROJECT_ID"))
     @Column(name = "SKILL_NAME")
+    @Builder.Default
     private Set<String> skillList = new HashSet<>();
 
     private int minExpReqd;
@@ -43,15 +49,23 @@ public class Project {
     private Company company;
 
     @OneToMany(mappedBy = "project")
-    private List<Application> applicationList = new ArrayList<>();
+    @Column(name = "APPLICATIONS")
+    @Builder.Default
+    private List<Application> applications = new ArrayList<>();
 
     @OneToMany(mappedBy = "project")
-    @Column(name = "HIRED_CONTRACTORS_LIST")
-    private List<Contractor> contractorList = new ArrayList<>();
+    @Column(name = "HIRED_CONTRACTORS")
+    @Builder.Default
+    private List<Contractor> contractors = new ArrayList<>();
 
     private int expectedPay;
     private String expectedPayCurrency;
 
     private LocalDateTime createdOn;
     private LocalDateTime modifiedOn;
+
+    public void setCompany(Company company) {
+        this.company = company;
+        company.getProjects().add(this);
+    }
 }

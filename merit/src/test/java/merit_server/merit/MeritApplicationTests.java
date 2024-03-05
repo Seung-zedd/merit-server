@@ -1,5 +1,7 @@
 package merit_server.merit;
 
+import merit_server.merit.domain.Company;
+import merit_server.merit.domain.Project;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -7,7 +9,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 class MeritApplicationTests {
 
 	@Test
-	void contextLoads() {
+	public void testMember() throws Exception
+	{
+	    //given
+
+
+	    //when
+
+	    //then
 	}
+
 
 }

@@ -1,7 +1,8 @@
 package merit_server.merit.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,7 +10,10 @@ import java.util.List;
 import java.util.Set;
 
 @Entity(name = "CONTRACTOR")
-@Data
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@Getter
 public class Contractor {
 
     @Id
@@ -17,8 +21,9 @@ public class Contractor {
     @Column(name = "CONTRACTOR_ID")
     private Long id;
 
-    @Column(name = "CONTRACTOR_NAME")
+    @Column(name = "CONTRACTOR_NAME", unique = true, nullable = false)
     private String name;
+    @Column(nullable = false)
     private String email;
     private String website;
 
@@ -38,12 +43,14 @@ public class Contractor {
             name = "SKILL_LIST",
             joinColumns = @JoinColumn(name = "CONTRACTOR_ID"))
     @Column(name = "SKILL_NAME")
+    @Builder.Default
     private Set<String> skillList = new HashSet<>();
 
     private int experience;
 
     @OneToMany(mappedBy = "contractor")
-    private List<Company> companyList = new ArrayList<>();
+    @Builder.Default
+    private List<Company> companies = new ArrayList<>();
 
     private int expectedPay;
     private String expectedPayCurrency;
@@ -55,8 +62,15 @@ public class Contractor {
     @Embedded
     private Image avatar;
 
-    @OneToMany(mappedBy = "contractor")
-    private List<ContractorApplication> caList = new ArrayList<>();
+    @OneToMany(mappedBy = "contractor", cascade = CascadeType.PERSIST)
+    @Builder.Default
+    private List<ContractorApplication> contractorApplications = new ArrayList<>();
+
     private LocalDateTime createdOn;
     private LocalDateTime lastUpdatedOn;
+
+    public void setProject(Project project) {
+        this.project = project;
+        project.getContractors().add(this);
+    }
 }

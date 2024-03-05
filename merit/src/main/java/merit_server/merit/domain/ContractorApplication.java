@@ -1,19 +1,16 @@
 package merit_server.merit.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Getter
 public class ContractorApplication {
 
-    // made this table in order to consider possibility of expansion
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -23,4 +20,15 @@ public class ContractorApplication {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "APPLICATION_ID")
     private Application application;
+
+    public void setContractor(Contractor contractor) {
+        this.contractor = contractor;
+        contractor.getContractorApplications().add(this);
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
+        application.getContractorApplications().add(this);
+    }
+
 }

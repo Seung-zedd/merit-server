@@ -1,14 +1,17 @@
 package merit_server.merit.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "COMPANY")
-@Data
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@Getter
 public class Company {
 
     @Id
@@ -35,6 +38,12 @@ public class Company {
     private Contractor contractor;
 
     @OneToMany(mappedBy = "company")
-    private List<Project> projectList = new ArrayList<>();
+    @Builder.Default
+    private List<Project> projects = new ArrayList<>();
     private LocalDateTime createdOn;
+
+    public void setContractor(Contractor contractor) {
+        this.contractor = contractor;
+        contractor.getCompanies().add(this);
+    }
 }
