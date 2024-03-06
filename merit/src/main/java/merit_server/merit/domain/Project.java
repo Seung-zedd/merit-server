@@ -1,21 +1,17 @@
 package merit_server.merit.domain;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-@Entity(name = "PROJECT")
+@Entity
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Setter
 public class Project {
 
     @Id
@@ -27,14 +23,15 @@ public class Project {
     private String name;
     private String projectDescription;
 
-    // * skills required for the project
-    @ElementCollection
-    @CollectionTable(
-            name = "SKILL_LIST_RQ",
-            joinColumns = @JoinColumn(name = "PROJECT_ID"))
-    @Column(name = "SKILL_NAME")
+    @OneToMany(mappedBy = "project")
     @Builder.Default
-    private Set<String> skillList = new HashSet<>();
+    private List<ProjectSkill> projectSkills = new ArrayList<>();
+
+    // * I autonomously added role column related to wireframe("UX Researcher")
+    @Column(name = "PROJECT_ROLE")
+    private String role;
+
+    // * I think need to be added Salary column
 
     private int minExpReqd;
     private int maxExpReqd;
@@ -48,23 +45,14 @@ public class Project {
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
 
-    @OneToMany(mappedBy = "project")
-    @Column(name = "APPLICATIONS")
-    @Builder.Default
-    private List<Application> applications = new ArrayList<>();
-
-    @OneToMany(mappedBy = "project")
-    @Column(name = "HIRED_CONTRACTORS")
-    @Builder.Default
-    private List<Contractor> contractors = new ArrayList<>();
-
-    private int expectedPay;
-    private String expectedPayCurrency;
-
     private LocalDateTime createdOn;
     private LocalDateTime modifiedOn;
 
-    public void setCompany(Company company) {
+    @OneToMany(mappedBy = "project")
+    @Builder.Default
+    private List<ProjectContractor> projectContractors = new ArrayList<>();
+
+    public void addCompany(Company company) {
         this.company = company;
         company.getProjects().add(this);
     }

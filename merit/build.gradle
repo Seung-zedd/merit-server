@@ -28,8 +28,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	// p6spy 디펜던시 (쿼리 파라미터 출력)
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
-	// https://mvnrepository.com/artifact/com.graphql-java-kickstart/graphql-spring-boot-starter
-	implementation 'com.graphql-java:graphql-java:INSERT_LATEST_VERSION_HERE'
+	implementation 'org.springframework.boot:spring-boot-starter-graphql'
+	implementation 'com.graphql-java-kickstart:playground-spring-boot-starter:5.10.0'
 	compileOnly 'org.projectlombok:lombok'
 	compileJava {
 		options.compilerArgs += ['-parameters']

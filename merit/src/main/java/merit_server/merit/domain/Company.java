@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(name = "COMPANY")
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
@@ -33,17 +33,14 @@ public class Company {
     @Enumerated(EnumType.STRING)
     private CompanyStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CONTRACTOR_ID")
-    private Contractor contractor;
-
     @OneToMany(mappedBy = "company")
     @Builder.Default
     private List<Project> projects = new ArrayList<>();
+
+    @OneToMany(mappedBy = "company")
+    @Builder.Default
+    private List<CompanyContractor> companyContractors = new ArrayList<>();
+
     private LocalDateTime createdOn;
 
-    public void setContractor(Contractor contractor) {
-        this.contractor = contractor;
-        contractor.getCompanies().add(this);
-    }
 }

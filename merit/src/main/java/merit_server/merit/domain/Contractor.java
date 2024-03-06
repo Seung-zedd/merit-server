@@ -5,11 +5,9 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-@Entity(name = "CONTRACTOR")
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
@@ -34,23 +32,15 @@ public class Contractor {
     private Address address;
     private String contactNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROJECT_ID")
-    private Project project;
-
-    @ElementCollection
-    @CollectionTable(
-            name = "SKILL_LIST",
-            joinColumns = @JoinColumn(name = "CONTRACTOR_ID"))
-    @Column(name = "SKILL_NAME")
+    @OneToMany(mappedBy = "contractor")
     @Builder.Default
-    private Set<String> skillList = new HashSet<>();
+    private List<ContractorSkill> contractorSkills = new ArrayList<>();
 
     private int experience;
 
     @OneToMany(mappedBy = "contractor")
     @Builder.Default
-    private List<Company> companies = new ArrayList<>();
+    private List<CompanyContractor> companyContractors = new ArrayList<>();
 
     private int expectedPay;
     private String expectedPayCurrency;
@@ -62,15 +52,16 @@ public class Contractor {
     @Embedded
     private Image avatar;
 
-    @OneToMany(mappedBy = "contractor", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "contractor")
     @Builder.Default
-    private List<ContractorApplication> contractorApplications = new ArrayList<>();
+    private List<ProjectContractor> projectContractors = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "APPLICATION_ID", unique = true)
+    @Setter(AccessLevel.NONE)
+    private Application application;
 
     private LocalDateTime createdOn;
     private LocalDateTime lastUpdatedOn;
 
-    public void setProject(Project project) {
-        this.project = project;
-        project.getContractors().add(this);
-    }
 }
