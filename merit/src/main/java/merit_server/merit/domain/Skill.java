@@ -2,6 +2,8 @@ package merit_server.merit.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import merit_server.merit.dto.SkillDto;
+import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,5 +31,11 @@ public class Skill {
     @OneToMany(mappedBy = "skill")
     @Builder.Default
     private List<ProjectSkill> projectSkills = new ArrayList<>();
+
+    private static ModelMapper modelMapper = new ModelMapper();
+
+    public static Skill to(SkillDto skillDto) {
+        return modelMapper.map(skillDto, Skill.class);
+    }
 
 }

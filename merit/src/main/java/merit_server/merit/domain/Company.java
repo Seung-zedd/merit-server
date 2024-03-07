@@ -2,6 +2,8 @@ package merit_server.merit.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import merit_server.merit.dto.CompanyDto;
+import org.modelmapper.ModelMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,5 +44,11 @@ public class Company {
     private List<CompanyContractor> companyContractors = new ArrayList<>();
 
     private LocalDateTime createdOn;
+
+    private static ModelMapper modelMapper = new ModelMapper();
+
+    public static Company to(CompanyDto companyDto) {
+        return modelMapper.map(companyDto, Company.class);
+    }
 
 }

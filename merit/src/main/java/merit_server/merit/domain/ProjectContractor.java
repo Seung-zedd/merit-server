@@ -2,6 +2,9 @@ package merit_server.merit.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import merit_server.merit.dto.ProjectContractorDto;
+import merit_server.merit.dto.ProjectDto;
+import org.modelmapper.ModelMapper;
 
 @Entity
 @AllArgsConstructor
@@ -52,6 +55,12 @@ public class ProjectContractor {
     public void addApplication(Application application) {
         this.application = application;
         application.getProjectContractors().add(this);
+    }
+
+    private static ModelMapper modelMapper = new ModelMapper();
+
+    public static ProjectContractor to(ProjectContractorDto projectContractorDto) {
+        return modelMapper.map(projectContractorDto, ProjectContractor.class);
     }
 
 }

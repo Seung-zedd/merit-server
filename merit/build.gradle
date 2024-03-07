@@ -30,6 +30,8 @@ dependencies {
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 	implementation 'org.springframework.boot:spring-boot-starter-graphql'
 	implementation 'com.graphql-java-kickstart:playground-spring-boot-starter:5.10.0'
+	// https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.0'
 	compileOnly 'org.projectlombok:lombok'
 	compileJava {
 		options.compilerArgs += ['-parameters']
