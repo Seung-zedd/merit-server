@@ -17,10 +17,4 @@ public class CompanyContractorDto  {
     private CompanyContractorStatus status;
     private LocalDateTime lastStatusDate;
 
-    private static ModelMapper modelMapper = new ModelMapper();
-
-    // convert Entity to Dto
-    public static CompanyContractorDto from(CompanyContractor companyContractor) {
-        return modelMapper.map(companyContractor, CompanyContractorDto.class);
-    }
 }

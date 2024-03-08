@@ -22,10 +22,5 @@ public class CompanyDto  {
     private CompanyStatus status;
     private LocalDateTime createdOn;
 
-    private static ModelMapper modelMapper = new ModelMapper();
 
-    // convert Entity to Dto
-    public static CompanyDto from(Company company) {
-        return modelMapper.map(company, CompanyDto.class);
-    }
 }

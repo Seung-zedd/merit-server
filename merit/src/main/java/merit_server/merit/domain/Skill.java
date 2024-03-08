@@ -31,11 +31,4 @@ public class Skill {
     @OneToMany(mappedBy = "skill")
     @Builder.Default
     private List<ProjectSkill> projectSkills = new ArrayList<>();
-
-    private static ModelMapper modelMapper = new ModelMapper();
-
-    public static Skill to(SkillDto skillDto) {
-        return modelMapper.map(skillDto, Skill.class);
-    }
-
 }

@@ -57,10 +57,4 @@ public class ProjectContractor {
         application.getProjectContractors().add(this);
     }
 
-    private static ModelMapper modelMapper = new ModelMapper();
-
-    public static ProjectContractor to(ProjectContractorDto projectContractorDto) {
-        return modelMapper.map(projectContractorDto, ProjectContractor.class);
-    }
-
 }

@@ -67,9 +67,4 @@ public class Contractor {
     private LocalDateTime createdOn;
     private LocalDateTime lastUpdatedOn;
 
-    private static ModelMapper modelMapper = new ModelMapper();
-
-    public static Contractor to(ContractorDto contractorDto) {
-        return modelMapper.map(contractorDto, Contractor.class);
-    }
 }

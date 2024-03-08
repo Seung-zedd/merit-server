@@ -29,10 +29,5 @@ public class ProjectDto {
 
     private boolean required;
 
-    private static ModelMapper modelMapper = new ModelMapper();
 
-    // convert Entity to Dto
-    public static ProjectDto from(Project project) {
-        return modelMapper.map(project, ProjectDto.class);
-    }
 }

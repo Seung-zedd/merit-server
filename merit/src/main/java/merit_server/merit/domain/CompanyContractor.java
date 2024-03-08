@@ -43,11 +43,4 @@ public class CompanyContractor {
         contractor.getCompanyContractors().add(this);
     }
 
-    private static ModelMapper modelMapper = new ModelMapper();
-
-    public static CompanyContractor to(CompanyContractorDto companyContractorDto) {
-        return modelMapper.map(companyContractorDto, CompanyContractor.class);
-    }
-
-
 }

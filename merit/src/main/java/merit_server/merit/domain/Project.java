@@ -59,9 +59,5 @@ public class Project {
         company.getProjects().add(this);
     }
 
-    private static ModelMapper modelMapper = new ModelMapper();
 
-    public static Project to(ProjectDto projectDto) {
-        return modelMapper.map(projectDto, Project.class);
-    }
 }

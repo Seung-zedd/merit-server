@@ -26,10 +26,6 @@ public class ContractorDto {
     private LocalDateTime createdOn;
     private LocalDateTime lastUpdatedOn;
 
-    private static ModelMapper modelMapper = new ModelMapper();
 
-    // convert Entity to Dto
-    public static ContractorDto from(Contractor contractor) {
-        return modelMapper.map(contractor, ContractorDto.class);
-    }
+
 }

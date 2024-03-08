@@ -12,10 +12,4 @@ public class SkillDto  {
     private String name;
     private String skillsDescription;
 
-    private static ModelMapper modelMapper = new ModelMapper();
-
-    // convert Entity to Dto
-    public static SkillDto from(Skill skill) {
-        return modelMapper.map(skill, SkillDto.class);
-    }
 }

@@ -45,10 +45,4 @@ public class Company {
 
     private LocalDateTime createdOn;
 
-    private static ModelMapper modelMapper = new ModelMapper();
-
-    public static Company to(CompanyDto companyDto) {
-        return modelMapper.map(companyDto, Company.class);
-    }
-
 }

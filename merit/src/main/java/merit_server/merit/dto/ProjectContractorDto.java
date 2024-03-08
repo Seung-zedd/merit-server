@@ -18,10 +18,4 @@ public class ProjectContractorDto {
     private String expectedPayCurrency;
     private String applicationDate;
 
-    private static ModelMapper modelMapper = new ModelMapper();
-
-    // convert Entity to Dto
-    public static ProjectContractorDto from(ProjectContractor projectContractor) {
-        return modelMapper.map(projectContractor, ProjectContractorDto.class);
-    }
 }
