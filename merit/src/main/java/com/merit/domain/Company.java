@@ -46,13 +46,15 @@ public class Company extends BaseEntity{
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" +
-                "id = " + id + ", " +
-                "name = " + name + ", " +
-                "email = " + email + ", " +
-                "website = " + website + ", " +
-                "contactNumber = " + contactNumber + ", " +
-                "address = " + address + ", " +
-                "about = " + about + ", " +
-                "status = " + status + ")";
+                "id = " + getId() + ", " +
+                "createdOn = " + getCreatedOn() + ", " +
+                "modifiedOn = " + getModifiedOn() + ", " +
+                "name = " + getName() + ", " +
+                "email = " + getEmail() + ", " +
+                "website = " + getWebsite() + ", " +
+                "contactNumber = " + getContactNumber() + ", " +
+                "address = " + getAddress() + ", " +
+                "about = " + getAbout() + ", " +
+                "status = " + getStatus() + ")";
     }
 }

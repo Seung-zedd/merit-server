@@ -89,60 +89,6 @@ class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Project should be updated")
-    void update() throws Exception {
-        //given
-        ProjectDto projectDto = ProjectDto.builder()
-                .id(1L)
-                .name("AI Finance Predictor")
-                .projectDescription("Developing a cutting-edge AI platform for predictive analytics in finance.")
-                .role("AI Algorithm Engineer")
-                .minExpReqd(3)
-                .maxExpReqd(7)
-                .status(ProjectStatus.OPEN)
-                .createdBy("CMP001")
-                .required(true)
-                .build();
-
-        SkillDto skillDto1 = SkillDto.builder()
-                .name("Python")
-                .skillsDescription("research machine learning data")
-                .id(1L)
-                .build();
-
-        SkillDto skillDto2 = SkillDto.builder()
-                .id(2L)
-                .name("Javascript")
-                .skillsDescription("make interactive web using Javascript")
-                .build();
-
-        List<SkillDto> skillDtos = List.of(skillDto1, skillDto2);
-
-        Long savedProjectId = projectService.createProject(projectDto, skillDtos);
-
-        //when
-        ProjectDto newProjectDto = ProjectDto.builder()
-                .id(3L)
-                .name("AI Predictor")
-                .projectDescription("Developing a cutting-edge AI platform for predictive analytics in finance.")
-                .role("AI Engineer")
-                .minExpReqd(2)
-                .maxExpReqd(5)
-                .status(ProjectStatus.OPEN)
-                .createdBy("CMP0011")
-                .required(true)
-                .build();
-
-        Long updatedProjectId = projectService.updateProject(savedProjectId, newProjectDto);
-        Project findProject = projectRepository.findById(updatedProjectId).get();
-
-        //then
-        assertThat(findProject.getName()).isEqualTo("AI Predictor");
-        log.debug("ProjectDto={}", projectDto);
-        log.debug("findProject={}", findProject);
-    }
-
-    @Test
     @DisplayName("should be read certain Project in detail")
     void readProject() throws Exception
     {
@@ -207,8 +153,59 @@ class ProjectServiceTest {
         log.debug("findProjectsDto={}", findProjectsDto);
     }
 
+    @Test
+    @DisplayName("Project should be updated")
+    void update() throws Exception {
+        //given
+        ProjectDto projectDto = ProjectDto.builder()
+                .id(1L)
+                .name("AI Finance Predictor")
+                .projectDescription("Developing a cutting-edge AI platform for predictive analytics in finance.")
+                .role("AI Algorithm Engineer")
+                .minExpReqd(3)
+                .maxExpReqd(7)
+                .status(ProjectStatus.OPEN)
+                .createdBy("CMP001")
+                .required(true)
+                .build();
 
+        SkillDto skillDto1 = SkillDto.builder()
+                .name("Python")
+                .skillsDescription("research machine learning data")
+                .id(1L)
+                .build();
 
+        SkillDto skillDto2 = SkillDto.builder()
+                .id(2L)
+                .name("Javascript")
+                .skillsDescription("make interactive web using Javascript")
+                .build();
+
+        List<SkillDto> skillDtos = List.of(skillDto1, skillDto2);
+
+        Long savedProjectId = projectService.createProject(projectDto, skillDtos);
+
+        //when
+        ProjectDto newProjectDto = ProjectDto.builder()
+                .id(3L)
+                .name("AI Predictor")
+                .projectDescription("Developing a cutting-edge AI platform for predictive analytics in finance.")
+                .role("AI Engineer")
+                .minExpReqd(2)
+                .maxExpReqd(5)
+                .status(ProjectStatus.OPEN)
+                .createdBy("CMP0011")
+                .required(true)
+                .build();
+
+        Long updatedProjectId = projectService.updateProject(savedProjectId, newProjectDto);
+        Project findProject = projectRepository.findById(updatedProjectId).get();
+
+        //then
+        assertThat(findProject.getName()).isEqualTo("AI Predictor");
+        log.debug("ProjectDto={}", projectDto);
+        log.debug("findProject={}", findProject);
+    }
 
     @Test
     @Transactional

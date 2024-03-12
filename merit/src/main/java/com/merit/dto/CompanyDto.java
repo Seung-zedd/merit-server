@@ -4,12 +4,10 @@ import lombok.*;
 import com.merit.domain.Address;
 import com.merit.domain.CompanyStatus;
 
-import java.time.LocalDateTime;
-
-
 @Getter
 @Setter
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompanyDto  {

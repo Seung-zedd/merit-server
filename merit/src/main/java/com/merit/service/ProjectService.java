@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -61,6 +60,13 @@ public class ProjectService {
         return savedProject.getId();
     }
 
+    // * (Read)Freelancer should be able to view their project details
+    // 파라미터의 id는 Controller에서 @PathVariable로 받을 예정
+    public ProjectDto getProject(Long id) {
+        Project project = projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + id));
+        return projectMapper.from(project);
+    }
+
     // * (Read)Employer should be able to view project listing
     // will be used in Controller
     public List<ProjectDto> getAllProjects() {
@@ -68,13 +74,6 @@ public class ProjectService {
         return projects.stream()
                 .map(projectMapper::from)
                 .toList();
-    }
-
-    // * (Read)Freelancer should be able to view their project details
-    // 파라미터의 id는 Controller에서 @PathVariable로 받을 예정
-    public ProjectDto getProject(Long id) {
-        Project project = projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + id));
-        return projectMapper.from(project);
     }
 
     // * (Update)
