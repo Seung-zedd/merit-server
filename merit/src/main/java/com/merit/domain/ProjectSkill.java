@@ -5,6 +5,9 @@ import lombok.*;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ProjectSkill {
 
     @Id
@@ -20,6 +23,8 @@ public class ProjectSkill {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SKILLS_ID")
     private Skill skill;
+
+    private boolean required;
 
     public void addProject(Project project) {
         this.project = project;

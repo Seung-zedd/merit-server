@@ -24,8 +24,7 @@ public class Project extends BaseEntity{
     private String name;
     private String projectDescription;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "project")
     @Builder.Default
     private List<ProjectSkill> projectSkills = new ArrayList<>();
 
@@ -42,7 +41,6 @@ public class Project extends BaseEntity{
     private ProjectStatus status;
 
     private String createdBy;
-    private boolean required;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COMPANY_ID")
@@ -71,7 +69,6 @@ public class Project extends BaseEntity{
                 "minExpReqd = " + getMinExpReqd() + ", " +
                 "maxExpReqd = " + getMaxExpReqd() + ", " +
                 "status = " + getStatus() + ", " +
-                "createdBy = " + getCreatedBy() + ", " +
-                "required = " + isRequired() + ")";
+                "createdBy = " + getCreatedBy() + ", ";
     }
 }

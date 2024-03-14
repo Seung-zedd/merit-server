@@ -6,6 +6,9 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder(toBuilder = true)
 @Getter
 public class ProjectContractor {
 
@@ -32,11 +35,7 @@ public class ProjectContractor {
     private int expectedHoursPerWeek;
     private String expectedPayCurrency;
 
-    private LocalDate applicationDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "APPLICATION_ID")
-    private Application application;
+    private LocalDate applicationDate = LocalDate.now();
 
     public void addProject(Project project) {
         this.project = project;
@@ -47,10 +46,4 @@ public class ProjectContractor {
         this.contractor = contractor;
         contractor.getProjectContractors().add(this);
     }
-
-    public void addApplication(Application application) {
-        this.application = application;
-        application.getProjectContractors().add(this);
-    }
-
 }

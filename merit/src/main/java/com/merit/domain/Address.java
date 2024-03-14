@@ -12,10 +12,10 @@ import lombok.*;
 @AllArgsConstructor
 public class Address {
 
-    @NotBlank(message = "주소 입력은 필수입니다")
+    @NotBlank(message = "Entering address is required")
     private String city;
-    @NotBlank(message = "주소 입력은 필수입니다")
+    @NotBlank(message = "Entering address is required")
     private String street;
-    @NotBlank(message = "주소 입력은 필수입니다")
+    @NotBlank(message = "Entering address is required")
     private String zipcode;
 }

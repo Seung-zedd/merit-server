@@ -1,16 +1,17 @@
 package com.merit.service;
 
-import com.merit.domain.Company;
-import com.merit.domain.Project;
-import com.merit.domain.ProjectSkill;
-import com.merit.domain.ProjectStatus;
+import com.merit.domain.*;
+import com.merit.dto.CompanyDto;
 import com.merit.dto.ProjectDto;
 import com.merit.dto.SkillDto;
+import com.merit.mapper.CompanyMapper;
 import com.merit.mapper.ProjectMapper;
+import com.merit.openCsv.OpenCsv;
 import com.merit.repository.CompanyRepository;
 import com.merit.repository.ProjectRepository;
 import com.merit.repository.ProjectSkillRepository;
 import com.merit.repository.SkillRepository;
+import com.opencsv.exceptions.CsvValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +25,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,149 +44,122 @@ class ProjectServiceTest {
 
     @Autowired
     private ProjectRepository projectRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
+    @Autowired
+    private CompanyMapper companyMapper;
+    @Autowired
+    private ProjectMapper projectMapper;
 
     @Autowired
     private ProjectService projectService;
 
     @Test
     @DisplayName("A project must be created and saved in the DB.")
-    void create() throws Exception {
+    void create() throws Exception, CsvValidationException {
         //given
         // 먼저 projectDto, skillDto, 그리고 companyId가 필요하다
-        ProjectDto projectDto = ProjectDto.builder()
-                .id(1L)
-                .name("AI Finance Predictor")
-                .projectDescription("Developing a cutting-edge AI platform for predictive analytics in finance.")
-                .role("AI Algorithm Engineer")
-                .minExpReqd(3)
-                .maxExpReqd(7)
-                .status(ProjectStatus.OPEN)
-                .createdBy("CMP001")
-                .required(true)
-                .build();
+        List<ProjectDto> csvProjectDtos = OpenCsv.readProjectDataFromCsv("src/test/resources/project.csv", 6);
+        List<SkillDto> csvSkillDtos = OpenCsv.readSkillDataFromCsv("src/test/resources/skills.csv", 6);
+        CompanyDto csvCompanyDto = OpenCsv.readCompanyDataFromCsv("src/test/resources/company.csv");
 
-//        Long companyId = 1L;
-        SkillDto skillDto1 = SkillDto.builder()
-                .name("Python")
-                .skillsDescription("research machine learning data")
-                .id(1L)
-                .build();
+        Company company = companyMapper.to(csvCompanyDto);
+        Company savedCompany = companyRepository.save(company);
 
-        SkillDto skillDto2 = SkillDto.builder()
-                .id(2L)
-                .name("Javascript")
-                .skillsDescription("make interactive web using Javascript")
-                .build();
+        for (ProjectDto csvProjectDto : csvProjectDtos) {
+            Long savedProjectId = projectService.createProject(csvProjectDto, csvSkillDtos, savedCompany.getId());
 
-        List<SkillDto> skillDtos = List.of(skillDto1, skillDto2);
-
-        //when
-        Long savedProjectId = projectService.createProject(projectDto, skillDtos);
-
-        //then
-        assertThat(savedProjectId).isEqualTo(projectDto.getId());
-        log.debug("ProjectDto={}", projectDto);
-        Optional<Project> optionalProject = projectRepository.findById(savedProjectId);
-        Project savedProject = optionalProject.get();
-        optionalProject.ifPresent(project -> log.debug("Project={}", project));
+            //then
+            assertThat(savedProjectId).isEqualTo(csvProjectDto.getId());
+            log.debug("csvProjectDto={}", csvProjectDto);
+            Optional<Project> optionalProject = projectRepository.findById(savedProjectId);
+            Project savedProject = optionalProject.get();
+            optionalProject.ifPresent(project -> log.debug("Project={}", project));
+        }
     }
 
     @Test
-    @DisplayName("should be read certain Project in detail")
-    void readProject() throws Exception
-    {
-        //given
-        Project project = Project.builder()
-                .id(1L)
-                .name("AI Finance Predictor")
-                .projectDescription("Developing a cutting-edge AI platform for predictive analytics in finance.")
-                .role("AI Algorithm Engineer")
-                .minExpReqd(3)
-                .maxExpReqd(7)
-                .status(ProjectStatus.OPEN)
-                .createdBy("CMP001")
-                .required(true)
-                .build();
-        Project savedProject = projectRepository.save(project);
+    @DisplayName("should read a certain Project in detail")
+    void readProject() throws Exception {
+        // Given
+        // First, we need projectDto, skillDto, and companyId
+        List<ProjectDto> csvProjectDtos = OpenCsv.readProjectDataFromCsv("src/test/resources/project.csv", 6);
+        List<SkillDto> csvSkillDtos = OpenCsv.readSkillDataFromCsv("src/test/resources/skills.csv", 6);
+        CompanyDto csvCompanyDto = OpenCsv.readCompanyDataFromCsv("src/test/resources/company.csv");
 
-        //when
-        ProjectDto projectDto = projectService.getProject(savedProject.getId());
+        Company company = companyMapper.to(csvCompanyDto);
+        Company savedCompany = companyRepository.save(company);
 
-        //then
-        assertThat(projectDto).isInstanceOf(ProjectDto.class);
-        log.debug("projectDto={}", projectDto);
+        List<Project> savedProjects = new ArrayList<>();
+
+        for (ProjectDto csvProjectDto : csvProjectDtos) {
+            Long savedProjectId = projectService.createProject(csvProjectDto, csvSkillDtos, savedCompany.getId());
+            Project savedProject = projectRepository.findById(savedProjectId).orElse(null);
+            if (savedProject != null) {
+                savedProjects.add(savedProject);
+            }
+        }
+
+        // When
+            ProjectDto projectDto = projectService.getProject(savedProjects.get(2).getId());
+
+        // Then
+            assertThat(projectDto).isInstanceOf(ProjectDto.class);
+            log.debug("projectDto={}", projectDto);
+        log.debug("projectSkill={}", ProjectSkill.class);
+
     }
 
     @Test
     @DisplayName("should read Project list")
-    void readAllProjects() throws Exception
-    {
-        //given
-        Project project1 = Project.builder()
-                .id(1L)
-                .name("AI Finance Predictor")
-                .projectDescription("Developing a cutting-edge AI platform for predictive analytics in finance.")
-                .role("AI Algorithm Engineer")
-                .minExpReqd(3)
-                .maxExpReqd(7)
-                .status(ProjectStatus.OPEN)
-                .createdBy("CMP001")
-                .required(true)
-                .build();
-        Project project2 = Project.builder()
-                .id(2L)
-                .name("BI Finance Predictor")
-                .projectDescription("Developing a cutting-edge BI platform for predictive analytics in finance.")
-                .role("BI Algorithm Engineer")
-                .minExpReqd(1)
-                .maxExpReqd(5)
-                .status(ProjectStatus.OPEN)
-                .createdBy("BMP001")
-                .required(true)
-                .build();
-        List<Project> projectList = List.of(project1, project2);
+    void readAllProjects() throws Exception {
+        // Given
+        List<ProjectDto> csvProjectDtos = OpenCsv.readProjectDataFromCsv("src/test/resources/project.csv", 6);
+        List<SkillDto> csvSkillDtos = OpenCsv.readSkillDataFromCsv("src/test/resources/skills.csv", 6);
+        CompanyDto csvCompanyDto = OpenCsv.readCompanyDataFromCsv("src/test/resources/company.csv");
 
-        projectRepository.saveAll(projectList);
+        Company company = companyMapper.to(csvCompanyDto);
+        Company savedCompany = companyRepository.save(company);
 
-        //when
-        List<ProjectDto> findProjectsDto = projectService.getAllProjects();
+        List<Project> savedProjects = new ArrayList<>();
 
-        //then
-        assertThat(findProjectsDto).isInstanceOf(List.class);
-        log.debug("findProjectsDto={}", findProjectsDto);
+        for (ProjectDto csvProjectDto : csvProjectDtos) {
+            Long savedProjectId = projectService.createProject(csvProjectDto, csvSkillDtos, savedCompany.getId());
+            Project savedProject = projectRepository.findById(savedProjectId).orElse(null);
+            if (savedProject != null) {
+                savedProjects.add(savedProject);
+            }
+        }
+
+        // when
+        List<ProjectDto> projectDtos = projectService.getAllProjects();
+
+        // then
+        assertThat(projectDtos).isInstanceOf(List.class);
+        log.debug("projectDtos={}", projectDtos);
     }
+
 
     @Test
     @DisplayName("Project should be updated")
     void update() throws Exception {
-        //given
-        ProjectDto projectDto = ProjectDto.builder()
-                .id(1L)
-                .name("AI Finance Predictor")
-                .projectDescription("Developing a cutting-edge AI platform for predictive analytics in finance.")
-                .role("AI Algorithm Engineer")
-                .minExpReqd(3)
-                .maxExpReqd(7)
-                .status(ProjectStatus.OPEN)
-                .createdBy("CMP001")
-                .required(true)
-                .build();
+        // Given
+        List<ProjectDto> csvProjectDtos = OpenCsv.readProjectDataFromCsv("src/test/resources/project.csv", 6);
+        List<SkillDto> csvSkillDtos = OpenCsv.readSkillDataFromCsv("src/test/resources/skills.csv", 6);
+        CompanyDto csvCompanyDto = OpenCsv.readCompanyDataFromCsv("src/test/resources/company.csv");
 
-        SkillDto skillDto1 = SkillDto.builder()
-                .name("Python")
-                .skillsDescription("research machine learning data")
-                .id(1L)
-                .build();
+        Company company = companyMapper.to(csvCompanyDto);
+        Company savedCompany = companyRepository.save(company);
 
-        SkillDto skillDto2 = SkillDto.builder()
-                .id(2L)
-                .name("Javascript")
-                .skillsDescription("make interactive web using Javascript")
-                .build();
+        List<Project> savedProjects = new ArrayList<>();
 
-        List<SkillDto> skillDtos = List.of(skillDto1, skillDto2);
-
-        Long savedProjectId = projectService.createProject(projectDto, skillDtos);
+        for (ProjectDto csvProjectDto : csvProjectDtos) {
+            Long savedProjectId = projectService.createProject(csvProjectDto, csvSkillDtos, savedCompany.getId());
+            Project savedProject = projectRepository.findById(savedProjectId).orElse(null);
+            if (savedProject != null) {
+                savedProjects.add(savedProject);
+            }
+        }
 
         //when
         ProjectDto newProjectDto = ProjectDto.builder()
@@ -195,15 +171,18 @@ class ProjectServiceTest {
                 .maxExpReqd(5)
                 .status(ProjectStatus.OPEN)
                 .createdBy("CMP0011")
-                .required(true)
+                .createdOn(LocalDate.now())
+                .modifiedOn(LocalDate.now())
                 .build();
+        Project newProject = projectMapper.to(newProjectDto);
+        Project savedProject = projectRepository.save(newProject);
 
-        Long updatedProjectId = projectService.updateProject(savedProjectId, newProjectDto);
+        Long updatedProjectId = projectService.updateProject(savedProject.getId(), newProjectDto);
         Project findProject = projectRepository.findById(updatedProjectId).get();
 
         //then
         assertThat(findProject.getName()).isEqualTo("AI Predictor");
-        log.debug("ProjectDto={}", projectDto);
+        log.debug("csvProjectDtos={}", csvProjectDtos);
         log.debug("findProject={}", findProject);
     }
 
@@ -212,27 +191,28 @@ class ProjectServiceTest {
     @DisplayName("should be delete certain Project")
     void deleteProject() throws Exception {
         //given
-        Project project = Project.builder()
-                .id(1L)
-                .name("AI Finance Predictor")
-                .projectDescription("Developing a cutting-edge AI platform for predictive analytics in finance.")
-                .role("AI Algorithm Engineer")
-                .minExpReqd(3)
-                .maxExpReqd(7)
-                .status(ProjectStatus.OPEN)
-                .createdBy("CMP001")
-                .required(true)
-                .build();
+        List<ProjectDto> csvProjectDtos = OpenCsv.readProjectDataFromCsv("src/test/resources/project.csv", 6);
+        List<SkillDto> csvSkillDtos = OpenCsv.readSkillDataFromCsv("src/test/resources/skills.csv", 6);
+        CompanyDto csvCompanyDto = OpenCsv.readCompanyDataFromCsv("src/test/resources/company.csv");
 
-        ProjectSkill projectSkill = new ProjectSkill();
+        Company company = companyMapper.to(csvCompanyDto);
+        Company savedCompany = companyRepository.save(company);
 
-        Project findProject = projectRepository.save(project);
+        List<Project> savedProjects = new ArrayList<>();
+
+        for (ProjectDto csvProjectDto : csvProjectDtos) {
+            Long savedProjectId = projectService.createProject(csvProjectDto, csvSkillDtos, savedCompany.getId());
+            Project savedProject = projectRepository.findById(savedProjectId).orElse(null);
+            if (savedProject != null) {
+                savedProjects.add(savedProject);
+            }
+        }
 
         //when
-        projectService.deleteProject(findProject.getId());
+        projectService.deleteProject(savedProjects.get(0).getId());
 
         //then
-        Optional<Project> deletedProject = projectRepository.findById(findProject.getId());
+        Optional<Project> deletedProject = projectRepository.findById(savedProjects.get(0).getId());
         assertThat(deletedProject).isEmpty();
     }
 }

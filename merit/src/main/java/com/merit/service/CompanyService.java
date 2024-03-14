@@ -70,7 +70,7 @@ public class CompanyService {
 
         Company savedCompany = companyRepository.save(updatedCompany);
 
-        return companyRepository.findById(savedCompany.getId()).get().getId();
+        return savedCompany.getId();
     }
 
     // * (Delete)

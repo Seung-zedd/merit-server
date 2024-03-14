@@ -1,5 +1,8 @@
 package com.merit.service;
 
+import com.merit.dto.CompanyDto;
+import com.merit.dto.ProjectSkillDto;
+import com.merit.mapper.CompanyMapper;
 import com.merit.repository.SkillRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,26 +20,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProjectService {
-    private final ModelMapper modelMapper;
-    private final SkillRepository skillRepository;
 
+    private final CompanyRepository companyRepository;
+    private final SkillRepository skillRepository;
     private final ProjectRepository projectRepository;
     private final ProjectSkillRepository projectSkillRepository;
-    private final CompanyRepository companyRepository;
 
     private final ProjectMapper projectMapper;
     private final SkillMapper skillMapper;
+    private final CompanyMapper companyMapper;
+    private ProjectSkillDto projectSkillDto;
 
     // * (Create)Employer should be able to create a new project
     // Return: projectId so that Employer can identify each project
     @Transactional
-    public Long createProject(ProjectDto projectDto, List<SkillDto> skillDtos) {
+    public Long createProject(ProjectDto projectDto, List<SkillDto> skillDtos, Long companyId) {
         // create Project entity based on ProjectDto
         Project project = getProjectEntity(projectDto);
 
@@ -48,15 +53,21 @@ public class ProjectService {
         skillRepository.saveAll(skills);
         Project savedProject = projectRepository.save(project);
 
+        // Project-Skill
         // Lazy 초기화를 해줘야한다.(-> @Transactional로 해결)
         for (Skill skill : skills) {
-                ProjectSkill newProjectSkill = new ProjectSkill();
-
+            ProjectSkill newProjectSkill = ProjectSkill.builder()
+                    .required(projectSkillDto.isRequired())
+                    .build();
                 newProjectSkill.addProject(project);
                 newProjectSkill.addSkill(skill);
                 projectSkillRepository.save(newProjectSkill);
         }
 
+        // Project-Company
+        Company findCompany = companyRepository.findById(companyId).orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + companyId));
+
+        savedProject.addCompany(findCompany);
         return savedProject.getId();
     }
 
@@ -90,12 +101,11 @@ public class ProjectService {
                 .maxExpReqd(projectDto.getMaxExpReqd())
                 .status(projectDto.getStatus())
                 .createdBy(projectDto.getCreatedBy())
-                .required(projectDto.isRequired())
                 .build();
 
         Project savedProject = projectRepository.save(updatedProject);
 
-        return projectRepository.findById(savedProject.getId()).get().getId();
+        return savedProject.getId();
     }
 
     // * (Delete)
@@ -114,7 +124,6 @@ public class ProjectService {
                 .maxExpReqd(projectDto.getMaxExpReqd())
                 .status(projectDto.getStatus())
                 .createdBy(projectDto.getCreatedBy())
-                .required(projectDto.isRequired())
                 .build();
     }
 }

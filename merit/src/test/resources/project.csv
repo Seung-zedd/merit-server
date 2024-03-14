@@ -1,2 +1,16 @@
-project_name, project_description, job_role, min_exp_reqd, max_exp_reqd, status, created_by, company_id, created_on, modified_on
-AI Finance Predictor,	Developing a cutting-edge AI platform for predictive analytics in finance.,	AI Algorithm Engineer,	3,	7,	open,	CMP001,	CMP001, 2024-03-10, 2024-03-11
+project_id,project_name,project_description,job_role,min_exp_reqd,max_exp_reqd,status,created_by,company_id,created_on,modified_on
+1,AI Finance Predictor,Developing a cutting-edge AI platform for predictive analytics in finance.,AI Algorithm Engineer,3,7,open,CMP001,1,2023-03-01,2023-03-05
+2,Eco-Friendly Residences,Designing sustainable housing solutions with a focus on renewable materials and energy efficiency.,Sustainable Architect,5,10,open,CMP002,2,2023-02-15,2023-02-20
+3,Smart City IoT Integration,"Implementing IoT solutions for smart city infrastructure, focusing on traffic management and public safety.",Urban IoT Engineer,4,8,closed,CMP003,3,2023-01-10,2023-01-15
+4,Autonomous Delivery System,Creating a fleet of autonomous drones for efficient and eco-friendly package delivery.,Drone Automation Engineer,6,12,completed,CMP004,4,2022-12-01,2022-12-10
+5,Blockchain Voting Solution,Developing a secure and transparent voting system using blockchain technology.,Blockchain Security Developer,2,6,archived,CMP005,5,2022-11-20,2022-11-30
+6,Data-driven Marketing Platform,Developing a data-driven marketing platform for personalized advertising campaigns.,Data Scientist,3,7,archived,CMP0007,6,2023-01-05,2023-01-11
+7,Virtual Reality Training Simulator,Creating a virtual reality training simulator for immersive learning experiences.,VR Developer,2,9,completed,CMP0008,7,2023-02-02,2023-01-13
+8,Renewable Energy Optimization System,Designing a system for optimizing renewable energy usage in residential and industrial settings.,Renewable Energy Engineer,2,7,closed,CMP0009,8,2023-01-03,2023-01-12
+9,Medical Diagnosis AI Assistant,Developing an AI assistant for medical professionals to aid in diagnosis and treatment recommendations.,Medical AI Developer,2,6,archived,CMP0010,9,2023-01-03,2023-01-13
+10,Space Exploration Innovation,Exploring innovative technologies for space exploration missions.,Space Technology Specialist,3,5,closed,CMP0001,10,2023-02-02,2023-01-12
+11,Augmented Reality Gaming Experience,Creating an augmented reality gaming experience for interactive entertainment.,AR Developer,3,5,open,CMP0002,11,2023-01-04,2023-02-17
+12,Oceanic Conservation Initiative,Initiating a conservation initiative for protecting oceanic ecosystems.,Environmental Scientist,2,9,closed,CMP0003,12,2023-01-08,2023-02-12
+13,Advanced Weather Prediction Model,Developing a model for advanced weather prediction using machine learning algorithms.,Machine Learning Engineer,3,6,completed,CMP0004,13,2023-02-01,2023-01-15
+14,Cybersecurity Threat Detection System,Implementing a system for detecting and mitigating cybersecurity threats.,Cybersecurity Analyst,2,9,closed,CMP0005,14,2023-01-06,2023-01-14
+15,Advanced Robotics Development,Advancing robotics technology for various applications including automation and assistance.,Robotics Engineer,3,5,completed,CMP0006,15,2023-01-01,2023-02-14

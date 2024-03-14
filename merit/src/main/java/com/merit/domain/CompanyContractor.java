@@ -3,8 +3,6 @@ package com.merit.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,7 +25,8 @@ public class CompanyContractor extends BaseEntity{
 
     private CompanyContractorStatus status;
 
-    public void addCompany(Company company) {
+    // relationships are replaced with firebase
+   /* public void addCompany(Company company) {
         this.company = company;
         company.getCompanyContractors().add(this);
     }
@@ -35,6 +34,6 @@ public class CompanyContractor extends BaseEntity{
     public void addContractor(Contractor contractor) {
         this.contractor = contractor;
         contractor.getCompanyContractors().add(this);
-    }
+    }*/
 
 }

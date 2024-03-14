@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Builder
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ContractorSkill {
 
     @Id
@@ -23,7 +20,7 @@ public class ContractorSkill {
     @JoinColumn(name = "CONTRACTOR_ID")
     private Contractor contractor;
 
-    public void addSKill(Skill skill) {
+    public void addSkill(Skill skill) {
         this.skill = skill;
         skill.getContractorSkills().add(this);
     }

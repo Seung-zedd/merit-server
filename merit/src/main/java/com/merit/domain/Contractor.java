@@ -1,6 +1,5 @@
 package com.merit.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -61,12 +60,6 @@ public class Contractor extends BaseEntity{
     @JsonManagedReference
     @Builder.Default
     private List<ProjectContractor> projectContractors = new ArrayList<>();
-
-    @OneToOne
-    @JoinColumn(name = "APPLICATION_ID", unique = true)
-    @JsonBackReference
-    @Setter(AccessLevel.NONE)
-    private Application application;
 
     @Override
     public String toString() {

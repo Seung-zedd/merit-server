@@ -5,8 +5,7 @@ import lombok.*;
 
 import com.merit.domain.ProjectStatus;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -26,6 +25,8 @@ public class ProjectDto {
 
     private ProjectStatus status;
     private String createdBy;
+    private String companyId;
 
-    private boolean required;
+    private LocalDate createdOn;
+    private LocalDate modifiedOn;
 }

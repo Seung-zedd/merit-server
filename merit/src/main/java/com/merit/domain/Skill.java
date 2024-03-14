@@ -28,7 +28,7 @@ public class Skill {
     @Builder.Default
     private List<ContractorSkill> contractorSkills = new ArrayList<>();
 
-    @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "skill")
     @JsonManagedReference
     @Builder.Default
     private List<ProjectSkill> projectSkills = new ArrayList<>();

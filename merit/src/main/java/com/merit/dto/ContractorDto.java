@@ -3,7 +3,7 @@ package com.merit.dto;
 import lombok.*;
 import com.merit.domain.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -24,5 +24,8 @@ public class ContractorDto {
     private String expectedPayCurrency;
     private PdfDocument resume;
     private Image avatar;
+
+    private LocalDate createdOn;
+    private LocalDate modifiedOn;
 
 }

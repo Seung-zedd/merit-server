@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -19,15 +20,15 @@ import java.time.LocalDateTime;
 public abstract class BaseEntity {
 
     @Column(updatable = false, nullable = false)
-    private LocalDateTime createdOn;
+    private LocalDate createdOn;
 
     @Column(nullable = false)
-    private LocalDateTime modifiedOn;
+    private LocalDate modifiedOn;
 
     @PrePersist
     public void prePersist() {
         log.info("prePersist");
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
         createdOn = now;
         modifiedOn = now;
     }
@@ -35,6 +36,6 @@ public abstract class BaseEntity {
     @PreUpdate
     public void preUpdate() {
         log.info("preUpdate");
-        modifiedOn = LocalDateTime.now();
+        modifiedOn = LocalDate.now();
     }
 }

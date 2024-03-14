@@ -3,6 +3,8 @@ package com.merit.dto;
 import lombok.*;
 import com.merit.domain.ProjectContractorStatus;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Builder
@@ -16,6 +18,6 @@ public class ProjectContractorDto {
     private float expectedRate;
     private int expectedHoursPerWeek;
     private String expectedPayCurrency;
-    private String applicationDate;
+    private LocalDate applicationDate;
 
 }
