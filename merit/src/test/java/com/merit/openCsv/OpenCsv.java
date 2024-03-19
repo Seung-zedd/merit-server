@@ -1,11 +1,7 @@
 package com.merit.openCsv;
 
-import com.merit.domain.Address;
-import com.merit.domain.CompanyStatus;
-import com.merit.domain.ProjectStatus;
-import com.merit.dto.CompanyDto;
-import com.merit.dto.ProjectDto;
-import com.merit.dto.SkillDto;
+import com.merit.domain.*;
+import com.merit.dto.*;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
@@ -37,7 +33,72 @@ public class OpenCsv {
         }
     }
 
-    public static List<ProjectDto> readProjectDataFromCsv(String filePath, int maxLines) throws IOException, CsvException {
+    public static List<ProjectContractorDto> readProjectContractorDataFromCsv(String filePath, int maxLines) throws IOException, CsvValidationException {
+        List<ProjectContractorDto> projectContractorDtos = new ArrayList<>();
+        int lineCount = 0;
+        try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
+            String[] nextLine;
+            while ((nextLine = reader.readNext()) != null & lineCount < maxLines) {
+                if (lineCount == 0) { // 첫 번째 줄은 헤더이므로 스킵
+                    lineCount++;
+                    continue;
+                }
+                // CSV 파일의 각 행에서 필요한 정보를 추출하여 ProjectContractorDto 객체를 생성합니다.
+                ProjectContractorDto projectContractorDto = ProjectContractorDto.builder()
+                        .id(Long.parseLong(nextLine[0]))
+                        .status(ProjectContractorStatus.valueOf(nextLine[1].toUpperCase()))
+                        .comment(nextLine[2])
+                        .rateType(nextLine[3])
+                        .expectedRate(Float.parseFloat(nextLine[4]))
+                        .expectedHoursPerWeek(Integer.parseInt(nextLine[5]))
+                        .expectedPayCurrency(nextLine[6])
+                        .expectedExchangeRate(Float.parseFloat(nextLine[7]))
+                        .applicationDate(LocalDate.parse(nextLine[8]))
+                        .build();
+
+                projectContractorDtos.add(projectContractorDto);
+                lineCount++;
+            }
+        }
+        return projectContractorDtos;
+    }
+
+
+    public static List<ContractorDto> readContractorDataFromCsv(String filePath, int maxLines) throws IOException, CsvValidationException {
+        List<ContractorDto> contractorDtos = new ArrayList<>();
+        int lineCount = 0;
+        try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
+            String[] nextLine;
+            while ((nextLine = reader.readNext()) != null && lineCount < maxLines) { // 읽은 줄의 수가 maxLines보다 작을 때만 처리
+                if (lineCount == 0) { // 첫 번째 줄은 헤더이므로 스킵
+                    lineCount++;
+                    continue;
+                }
+                // CSV 파일의 각 행에서 필요한 정보를 추출하여 ContractorDto 객체를 생성합니다.
+                ContractorDto contractorDto = ContractorDto.builder()
+                        .id(Long.parseLong(nextLine[0]))
+                        .name(nextLine[1])
+                        .email(nextLine[2])
+                        .website(nextLine[3])
+                        .status(ContractorStatus.valueOf(nextLine[4].toUpperCase()))
+                        .address(parseAddress(nextLine[5]))
+                        .contactNumber(nextLine[6])
+                        .experience(Integer.parseInt(nextLine[7]))
+                        .expectedPay(Integer.parseInt(nextLine[8]))
+                        .expectedPayCurrency(nextLine[9])
+                        .resume(new PdfDocument(nextLine[10]))
+                        .avatar(new Image(nextLine[11]))
+                        .createdOn(LocalDate.parse(nextLine[12]))
+                        .modifiedOn(LocalDate.parse(nextLine[13]))
+                        .build();
+                contractorDtos.add(contractorDto);
+                lineCount++;
+            }
+        }
+        return contractorDtos;
+    }
+
+    public static List<ProjectDto> readProjectDataFromCsv(String filePath, int maxLines) throws IOException, CsvValidationException {
         List<ProjectDto> projectDtos = new ArrayList<>();
         int lineCount = 0; // 읽은 줄의 수를 저장하기 위한 변수 추가
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
@@ -57,9 +118,10 @@ public class OpenCsv {
                         .maxExpReqd(Integer.parseInt(nextLine[5]))
                         .status(ProjectStatus.valueOf(nextLine[6].toUpperCase()))
                         .createdBy(nextLine[7])
-                        .companyId(nextLine[8])
+                        .companyId(Long.parseLong(nextLine[8]))
                         .createdOn(LocalDate.parse(nextLine[9]))
                         .modifiedOn(LocalDate.parse(nextLine[10]))
+                        .salaryRange(Integer.parseInt(nextLine[11]))
                         .build();
                 projectDtos.add(projectDto);
                 lineCount++;
@@ -134,6 +196,6 @@ public class OpenCsv {
     }
 
     public static void main(String[] args) throws IOException, CsvValidationException {
-        readDataFromCsv("merit/src/test/resources/company.csv", 2);
+        readDataFromCsv("merit/src/test/resources/project.csv", 5);
     }
 }

@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
+@ToString
 @EqualsAndHashCode
 @AllArgsConstructor
 public class Address {

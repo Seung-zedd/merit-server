@@ -1,2 +1,2 @@
 company_id,company_name,email,website,contact_number,address,about,created_on,status
-1,Innovatech Solutions,contact@innovatechsolutions.com,www.innovatechsolutions.com,15005550011,"100 Tech Park, Innovation City","Leading provider of tech solutions, specializing in IoT and AI for smart cities.",2020-01-01,ACTIVE
+1,Innovatech Solutions,contact@innovatechsolutions.com,www.innovatechsolutions.com,15005550011,"100 Tech Park, Innovation City, 123-45600", "Leading provider of tech solutions, specializing in IoT and AI for smart cities.",2020-01-01,ACTIVE

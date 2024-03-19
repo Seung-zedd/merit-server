@@ -29,4 +29,14 @@ public class ContractorSkill {
         this.contractor = contractor;
         contractor.getContractorSkills().add(this);
     }
+
+    public void removeContractor(Contractor contractor) {
+        this.contractor = null;
+        contractor.getContractorSkills().remove(this);
+    }
+
+    public void removeSkill(Skill skill) {
+        this.skill = null;
+        skill.getContractorSkills().remove(this);
+    }
 }

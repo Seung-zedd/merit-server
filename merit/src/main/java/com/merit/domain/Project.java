@@ -25,6 +25,7 @@ public class Project extends BaseEntity{
     private String projectDescription;
 
     @OneToMany(mappedBy = "project")
+    @JsonManagedReference
     @Builder.Default
     private List<ProjectSkill> projectSkills = new ArrayList<>();
 
@@ -36,6 +37,7 @@ public class Project extends BaseEntity{
 
     private int minExpReqd;
     private int maxExpReqd;
+    private int salaryRange;
 
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;
@@ -56,6 +58,18 @@ public class Project extends BaseEntity{
         this.company = company;
         company.getProjects().add(this);
     }
+
+    public void removeCompany(Company company) {
+        this.company = null;
+        company.getProjects().remove(this);
+    }
+
+    /* business logic for updating domain*/
+
+
+
+
+
 
     @Override
     public String toString() {

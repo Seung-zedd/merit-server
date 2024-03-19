@@ -9,15 +9,10 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
 @Builder
+@ToString
 @Getter
 public class Image {
 
-    @Column(nullable = false)
     private String fileName;
 
-    @Column(nullable = false)
-    private String fileOriName;
-
-    @Column(nullable = false)
-    private String fileUrl;
 }

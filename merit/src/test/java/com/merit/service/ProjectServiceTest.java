@@ -66,6 +66,7 @@ class ProjectServiceTest {
         Company company = companyMapper.to(csvCompanyDto);
         Company savedCompany = companyRepository.save(company);
 
+        //when
         for (ProjectDto csvProjectDto : csvProjectDtos) {
             Long savedProjectId = projectService.createProject(csvProjectDto, csvSkillDtos, savedCompany.getId());
 
@@ -73,7 +74,7 @@ class ProjectServiceTest {
             assertThat(savedProjectId).isEqualTo(csvProjectDto.getId());
             log.debug("csvProjectDto={}", csvProjectDto);
             Optional<Project> optionalProject = projectRepository.findById(savedProjectId);
-            Project savedProject = optionalProject.get();
+            optionalProject.get();
             optionalProject.ifPresent(project -> log.debug("Project={}", project));
         }
     }
@@ -101,13 +102,11 @@ class ProjectServiceTest {
         }
 
         // When
-            ProjectDto projectDto = projectService.getProject(savedProjects.get(2).getId());
+        ProjectDto projectDto = projectService.getProject(savedProjects.get(2).getId());
 
         // Then
-            assertThat(projectDto).isInstanceOf(ProjectDto.class);
-            log.debug("projectDto={}", projectDto);
-        log.debug("projectSkill={}", ProjectSkill.class);
-
+        assertThat(projectDto).isInstanceOf(ProjectDto.class);
+        log.debug("projectDto={}", projectDto);
     }
 
     @Test
@@ -202,6 +201,7 @@ class ProjectServiceTest {
 
         for (ProjectDto csvProjectDto : csvProjectDtos) {
             Long savedProjectId = projectService.createProject(csvProjectDto, csvSkillDtos, savedCompany.getId());
+
             Project savedProject = projectRepository.findById(savedProjectId).orElse(null);
             if (savedProject != null) {
                 savedProjects.add(savedProject);
@@ -214,5 +214,6 @@ class ProjectServiceTest {
         //then
         Optional<Project> deletedProject = projectRepository.findById(savedProjects.get(0).getId());
         assertThat(deletedProject).isEmpty();
+
     }
 }

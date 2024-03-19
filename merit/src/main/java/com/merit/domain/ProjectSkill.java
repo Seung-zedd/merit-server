@@ -3,6 +3,8 @@ package com.merit.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Random;
+
 @Entity
 @Getter
 @Builder
@@ -34,5 +36,15 @@ public class ProjectSkill {
     public void addSkill(Skill skill) {
         this.skill = skill;
         skill.getProjectSkills().add(this);
+    }
+
+    public void removeProject(Project project) {
+        this.project = null;
+        project.getProjectSkills().remove(this);
+    }
+
+    public void removeSkill(Skill skill) {
+        this.skill = null;
+        skill.getProjectSkills().remove(this);
     }
 }

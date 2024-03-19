@@ -1,8 +1,6 @@
 package com.merit.service;
 
 import com.merit.domain.*;
-import com.merit.dto.CompanyContractorDto;
-import com.merit.dto.CompanyDto;
 import com.merit.dto.SkillDto;
 import com.merit.mapper.SkillMapper;
 import com.merit.repository.*;
@@ -14,6 +12,7 @@ import com.merit.mapper.ContractorMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static graphql.introspection.IntrospectionQueryBuilder.build;
@@ -24,9 +23,6 @@ import static graphql.introspection.IntrospectionQueryBuilder.build;
 @RequiredArgsConstructor
 public class ContractorService {
 
-    private final ProjectRepository projectRepository;
-
-    private final ProjectContractorRepository projectContractorRepository;
     private final ContractorSkillRepository contractorSkillRepository;
     private final SkillRepository skillRepository;
     private final ContractorRepository contractorRepository;
@@ -37,33 +33,31 @@ public class ContractorService {
     // * (Create)Employer should be able to create an account for freelancers
     //! 연관관계 편의 메서드: ContractorSkill가 필요
     //! => Company가 Contractor를 초대하기 때문에 파이어베이스 대신 이용
-    //? Contractor와 Project 간에도 cascade를 켜야할까? -> NO. Contractor가 삭제되도 얘가 어떤 Project를 맡았는지 정보가 필요할 수도 있음
+    // 이미 ProjectContractorService에서 연관관계 매핑하였음
     @Transactional
-    public Long createContractor(ContractorDto contractorDto, List<SkillDto> skillDtos, List<Project> projects) {
+    public Long create(ContractorDto contractorDto, List<SkillDto> skillDtos) {
 
         // create Contractor entity
         Contractor contractor = contractorMapper.to(contractorDto);
+
+        List<Skill> skills = skillDtos.stream()
+                .map(skillMapper::to)
+                .toList();
+
+        skillRepository.saveAll(skills);
+        contractor.setStatus(ContractorStatus.AVAILABLE);
+
         Contractor savedContractor = contractorRepository.save(contractor);
 
-        // Save Contractor-Skill relationship
-        for (SkillDto skillDto : skillDtos) {
-            Skill skill = skillMapper.to(skillDto);
-
-            // Check if Skill already exists in database
-            Skill existingSkill = skillRepository.findByName(skill.getName());
-            if (existingSkill != null) {
-                skill = existingSkill; // Use existing Skill if found
-            } else {
-                // Save new Skill if not found
-                skill = skillRepository.save(skill);
-            }
-
-            // Create and save Contractor-Skill relationship
+        // Contractor-Skill
+        for (Skill skill : skills) {
             ContractorSkill contractorSkill = new ContractorSkill();
             contractorSkill.addContractor(contractor);
             contractorSkill.addSkill(skill);
+
             contractorSkillRepository.save(contractorSkill);
         }
+        log.debug("contractorSkillRepository.size={}", contractorSkillRepository.findAll().size());
 
         return savedContractor.getId();
     }
@@ -82,9 +76,17 @@ public class ContractorService {
                 .toList();
     }
 
+    // * (Read-Condition) Employer should be able to view complete Contractor list available on the system.
+    public List<ContractorDto> getAvailableContractors() {
+        List<Contractor> allByStatus = contractorRepository.findAllByStatus(ContractorStatus.AVAILABLE);
+        return allByStatus.stream()
+                .map(contractorMapper::from)
+                .toList();
+    }
+
     // * (Update)
     @Transactional
-    public Long updateContractor(Long id, ContractorDto contractorDto) {
+    public Long updateContractor(Long id, ContractorDto contractorDto, List<SkillDto> skillDtos) {
         Contractor contractor = contractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Contractor not found with id: " + id));
 
         Address updatedAddress = Address.builder()
@@ -93,17 +95,22 @@ public class ContractorService {
                 .zipcode(contractorDto.getAddress().getZipcode())
                 .build();
 
-        PdfDocument updatedResume = PdfDocument.builder()
-                .pdfFileName(contractorDto.getResume().getPdfFileName())
-                .pdfFileOriName(contractorDto.getResume().getPdfFileName())
-                .pdfFileUrl(contractorDto.getResume().getPdfFileUrl())
-                .build();
+        // should update skills only related to Contractor
+        List<ContractorSkill> contractorSkills = contractor.getContractorSkills();
 
-        Image updatedAvatar = Image.builder()
-                .fileOriName(contractorDto.getAvatar().getFileOriName())
-                .fileUrl(contractorDto.getAvatar().getFileUrl())
-                .fileName(contractorDto.getAvatar().getFileName())
-                .build();
+        for (ContractorSkill contractorSkill : contractorSkills) {
+
+            Skill skill = contractorSkill.getSkill();
+
+            for (SkillDto skillDto : skillDtos) {
+                Skill updatedSkill = skill.toBuilder()
+                        .name(skillDto.getName())
+                        .skillsDescription(skillDto.getSkillsDescription())
+                        .build();
+                skillRepository.save(updatedSkill);
+                log.debug("updatedSkill={}", updatedSkill);
+            }
+        }
 
         Contractor updatedContractor = contractor.toBuilder()
                 .name(contractorDto.getName())
@@ -111,19 +118,37 @@ public class ContractorService {
                 .website(contractorDto.getWebsite())
                 .status(contractorDto.getStatus())
                 .address(updatedAddress)
-                .avatar(updatedAvatar)
-                .resume(updatedResume)
-                .contactNumber(contractor.getContactNumber())
-                .expectedPay(contractor.getExpectedPay())
-                .expectedPayCurrency(contractor.getExpectedPayCurrency())
+                .avatar(new Image(contractorDto.getAvatar().getFileName()))
+                .resume(new PdfDocument(contractorDto.getResume().getPdfFileName()))
+                .contactNumber(contractorDto.getContactNumber())
+                .expectedPay(contractorDto.getExpectedPay())
+                .expectedPayCurrency(contractorDto.getExpectedPayCurrency())
                 .build();
+
         Contractor savedContractor = contractorRepository.save(updatedContractor);
+        log.debug("savedContractor={}", savedContractor);
         return savedContractor.getId();
+
     }
 
     // * (Delete)
+    //? 삭제는 ProjectService 참조할 것 <- Contractor-skill 연관관계 제거
     @Transactional
     public void deleteContractor(Long id) {
+        Contractor contractor = contractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Contractor not found with id: " + id));
+
+        List<ContractorSkill> contractorSkillsToDelete = new ArrayList<>(contractor.getContractorSkills());
+
+        for (ContractorSkill contractorSkill : contractorSkillsToDelete) {
+
+            Skill skill = contractorSkill.getSkill();
+            contractorSkill.removeContractor(contractor);
+            contractorSkill.removeSkill(skill);
+        }
+
+        contractorSkillRepository.deleteAll(contractorSkillsToDelete);
+
         contractorRepository.deleteById(id);
+        log.debug("ContractorSkills.size={}", contractor.getContractorSkills().size());
     }
 }

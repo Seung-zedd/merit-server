@@ -8,16 +8,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
+@ToString
 @Builder
 @Getter
 public class PdfDocument {
 
-    @Column(nullable = false)
+    // After creating an account, click the update button to upload
     private String pdfFileName;
-
-    @Column(nullable = false)
-    private String pdfFileOriName;
-
-    @Column(nullable = false)
-    private String pdfFileUrl;
 }

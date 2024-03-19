@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,12 +31,11 @@ public class ProjectContractor {
 
     private String comment;
     private String rateType;
-
     private float expectedRate;
-    private int expectedHoursPerWeek;
+    private float expectedExchangeRate; // 기대 환율
     private String expectedPayCurrency;
-
-    private LocalDate applicationDate = LocalDate.now();
+    private int expectedHoursPerWeek;
+    private LocalDate applicationDate;
 
     public void addProject(Project project) {
         this.project = project;
@@ -45,5 +45,15 @@ public class ProjectContractor {
     public void addContractor(Contractor contractor) {
         this.contractor = contractor;
         contractor.getProjectContractors().add(this);
+    }
+
+    public void removeProject(Project project) {
+        this.project = null;
+        project.getProjectContractors().remove(this);
+    }
+
+    public void removeContractor(Contractor contractor) {
+        this.contractor = null;
+        contractor.getProjectContractors().remove(this);
     }
 }

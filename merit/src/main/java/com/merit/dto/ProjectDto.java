@@ -22,10 +22,11 @@ public class ProjectDto {
     private String role;
     private int minExpReqd;
     private int maxExpReqd;
+    private int salaryRange;
 
     private ProjectStatus status;
     private String createdBy;
-    private String companyId;
+    private Long companyId;
 
     private LocalDate createdOn;
     private LocalDate modifiedOn;

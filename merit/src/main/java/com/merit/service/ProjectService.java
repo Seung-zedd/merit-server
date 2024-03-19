@@ -19,8 +19,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Slf4j
 @Service
@@ -35,8 +37,6 @@ public class ProjectService {
 
     private final ProjectMapper projectMapper;
     private final SkillMapper skillMapper;
-    private final CompanyMapper companyMapper;
-    private ProjectSkillDto projectSkillDto;
 
     // * (Create)Employer should be able to create a new project
     // Return: projectId so that Employer can identify each project
@@ -57,12 +57,15 @@ public class ProjectService {
         // Lazy 초기화를 해줘야한다.(-> @Transactional로 해결)
         for (Skill skill : skills) {
             ProjectSkill newProjectSkill = ProjectSkill.builder()
-                    .required(projectSkillDto.isRequired())
+                    .required(new Random().nextBoolean())
                     .build();
-                newProjectSkill.addProject(project);
-                newProjectSkill.addSkill(skill);
-                projectSkillRepository.save(newProjectSkill);
+            newProjectSkill.addProject(project);
+            newProjectSkill.addSkill(skill);
+
+            //? save()를 호출할 때 영속성 컨텍스트에 새로운 ProjectSkill 엔티티가 저장되고, 각각의 ProjectSkill 엔티티에 대해 고유한 식별자가 생성
+            projectSkillRepository.save(newProjectSkill);
         }
+        log.debug("projectSkillRepository.size={}", projectSkillRepository.findAll().size());
 
         // Project-Company
         Company findCompany = companyRepository.findById(companyId).orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + companyId));
@@ -100,6 +103,7 @@ public class ProjectService {
                 .minExpReqd(projectDto.getMinExpReqd())
                 .maxExpReqd(projectDto.getMaxExpReqd())
                 .status(projectDto.getStatus())
+                .salaryRange(projectDto.getSalaryRange())
                 .createdBy(projectDto.getCreatedBy())
                 .build();
 
@@ -111,7 +115,38 @@ public class ProjectService {
     // * (Delete)
     @Transactional
     public void deleteProject(Long id) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + id));
+
+        List<ProjectSkill> projectSkillsToDelete = new ArrayList<>();
+
+        // 프로젝트와 연관된 모든 프로젝트 스킬을 임시 컬렉션에 추가합니다.
+        for (ProjectSkill projectSkill : new ArrayList<>(project.getProjectSkills())) {
+
+            // 프로젝트와 연관된 스킬들만 제거한다
+            Skill skill = projectSkill.getSkill();
+            projectSkill.removeProject(project);
+            projectSkill.removeSkill(skill);
+            projectSkillsToDelete.add(projectSkill);
+
+        }
+
+        // 임시 컬렉션에 있는 프로젝트 스킬을 삭제합니다.
+        projectSkillRepository.deleteAll(projectSkillsToDelete);
+
+        // remove Project-Company relationship
+        Company findCompany = project.getCompany();
+        project.removeCompany(findCompany);
+        log.debug("project.getCompany={}", project.getCompany());
+
+        // 프로젝트를 삭제합니다.
         projectRepository.deleteById(id);
+        // 프로젝트와 연관된 projectSkill도 실제로 삭제됬는지 log.debug()로 확인
+        log.debug("ProjectSkills.size={}", project.getProjectSkills().size());
+    }
+
+    public void changeStatus(ProjectDto projectDto) {
+
     }
 
     private Project getProjectEntity(ProjectDto projectDto) {
@@ -122,8 +157,9 @@ public class ProjectService {
                 .role(projectDto.getRole())
                 .minExpReqd(projectDto.getMinExpReqd())
                 .maxExpReqd(projectDto.getMaxExpReqd())
-                .status(projectDto.getStatus())
+                .status(ProjectStatus.OPEN)
                 .createdBy(projectDto.getCreatedBy())
+                .salaryRange(projectDto.getSalaryRange())
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.merit.service;
 
+import com.merit.domain.Company;
 import com.merit.domain.Contractor;
 import com.merit.domain.Project;
 import com.merit.domain.ProjectContractor;
@@ -9,14 +10,16 @@ import com.merit.dto.ProjectDto;
 import com.merit.mapper.ContractorMapper;
 import com.merit.mapper.ProjectContractorMapper;
 import com.merit.mapper.ProjectMapper;
+import com.merit.repository.CompanyRepository;
+import com.merit.repository.ContractorRepository;
 import com.merit.repository.ProjectContractorRepository;
+import com.merit.repository.ProjectRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -24,26 +27,29 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProjectContractorService {
+    private final CompanyRepository companyRepository;
     private final ProjectContractorRepository projectContractorRepository;
     private final ProjectContractorMapper projectContractorMapper;
-    private final ProjectMapper projectMapper;
-    private final ContractorMapper contractorMapper;
+    private final ProjectRepository projectRepository;
+    private final ContractorRepository contractorRepository;
 
+    // * (create) Contractor and Project entity is already created
     @Transactional
-    public Long createProjectContractor(ProjectContractorDto projectContractorDto, ProjectDto projectDto, ContractorDto contractorDto) {
+    public Long create(ProjectContractorDto projectContractorDto, Long projectId, Long contractorId) {
 
         // create PC entity
         ProjectContractor projectContractor = projectContractorMapper.to(projectContractorDto);
-        ProjectContractor savedPC = projectContractorRepository.save(projectContractor);
+        ProjectContractor savedProjectContractor = projectContractorRepository.save(projectContractor);
 
-        Project project = projectMapper.to(projectDto);
-        Contractor contractor = contractorMapper.to(contractorDto);
+        Project findProject = projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + projectId));
+
+        Contractor findContractor = contractorRepository.findById(contractorId).orElseThrow(() -> new EntityNotFoundException("Contractor not found with id: " + contractorId));
 
         // Project-Contractor
-        savedPC.addProject(project);
-        savedPC.addContractor(contractor);
+        savedProjectContractor.addProject(findProject);
+        savedProjectContractor.addContractor(findContractor);
 
-        return savedPC.getId();
+        return savedProjectContractor.getId();
     }
 
     // * (Read)
@@ -72,7 +78,6 @@ public class ProjectContractorService {
                 .expectedRate(projectContractorDto.getExpectedRate())
                 .expectedHoursPerWeek(projectContractorDto.getExpectedHoursPerWeek())
                 .expectedPayCurrency(projectContractorDto.getExpectedPayCurrency())
-                .applicationDate(LocalDate.now())
                 .build();
         ProjectContractor saved = projectContractorRepository.save(updatedProjectContractor);
         return saved.getId();

@@ -26,6 +26,7 @@ public class Contractor extends BaseEntity{
     private String website;
 
     @Enumerated(EnumType.STRING)
+    @Setter
     private ContractorStatus status;
 
     @Embedded
