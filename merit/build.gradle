@@ -30,8 +30,6 @@ dependencies {
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 	implementation 'org.springframework.boot:spring-boot-starter-graphql'
 	implementation 'com.graphql-java-kickstart:playground-spring-boot-starter:5.10.0'
-	// https://mvnrepository.com/artifact/org.modelmapper/modelmapper
-	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.0'
 	compileOnly 'org.projectlombok:lombok'
 	compileJava {
 		options.compilerArgs += ['-parameters']
@@ -39,13 +37,19 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
+	// 롬복보다 뒤에 추가해야함
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	// to test with Logger
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'com.h2database:h2'
 	// to test with CSV dummy data
 	testImplementation 'com.opencsv:opencsv:5.9'
-	// to test with Logger
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
+	// If you are using mapstruct in test code
+	testAnnotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
+
 
 }
 

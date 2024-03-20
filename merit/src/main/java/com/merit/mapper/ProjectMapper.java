@@ -1,21 +1,16 @@
 package com.merit.mapper;
 
-import lombok.RequiredArgsConstructor;
 import com.merit.domain.Project;
 import com.merit.dto.ProjectDto;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-@Component
-@RequiredArgsConstructor
-public class ProjectMapper {
-    private final ModelMapper modelMapper;
+@Mapper
+public interface ProjectMapper {
 
-    public Project to(ProjectDto projectDto) {
-        return modelMapper.map(projectDto, Project.class);
-    }
+    ProjectMapper INSTANCE = Mappers.getMapper(ProjectMapper.class);
 
-    public ProjectDto from(Project project) {
-        return modelMapper.map(project, ProjectDto.class);
-    }
+    ProjectDto from(Project project);
+
+    Project to(ProjectDto projectDto);
 }

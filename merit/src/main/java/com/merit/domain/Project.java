@@ -9,8 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "PROJECTS")
 @Getter
 @Builder(toBuilder = true)
+// 필드명이 많으면 더러워지니까 그냥 오버라이딩으로 로그를 보자
+@ToString(of = {"id", "name", "projectDescription", "role", "minExpReqd", "maxExpReqd", "salaryRange", "status", "createdBy"})
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Project extends BaseEntity{
@@ -46,11 +49,11 @@ public class Project extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COMPANY_ID")
-    @JsonBackReference
+    @JsonBackReference // toString 순환참조 방지 위해 연관관계의 주인이 되는 엔티티에 붙임
     private Company company;
 
     @OneToMany(mappedBy = "project")
-    @JsonManagedReference
+    @JsonManagedReference // mappedBy 있는 곳에 붙임
     @Builder.Default
     private List<ProjectContractor> projectContractors = new ArrayList<>();
 
@@ -65,24 +68,4 @@ public class Project extends BaseEntity{
     }
 
     /* business logic for updating domain*/
-
-
-
-
-
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + getId() + ", " +
-                "createdOn = " + getCreatedOn() + ", " +
-                "modifiedOn = " + getModifiedOn() + ", " +
-                "name = " + getName() + ", " +
-                "projectDescription = " + getProjectDescription() + ", " +
-                "role = " + getRole() + ", " +
-                "minExpReqd = " + getMinExpReqd() + ", " +
-                "maxExpReqd = " + getMaxExpReqd() + ", " +
-                "status = " + getStatus() + ", " +
-                "createdBy = " + getCreatedBy() + ", ";
-    }
 }

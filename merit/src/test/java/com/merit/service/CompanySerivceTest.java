@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.*;
 @ActiveProfiles("test")
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application-test.yml")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Rollback(false)
 @Transactional
 @Slf4j

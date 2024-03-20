@@ -1,23 +1,18 @@
 package com.merit.mapper;
 
-import lombok.RequiredArgsConstructor;
 import com.merit.domain.Skill;
 import com.merit.dto.SkillDto;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-@Component
-@RequiredArgsConstructor
-public class SkillMapper {
-    private final ModelMapper modelMapper;
 
-    public Skill to(SkillDto skillDto) {
-        return modelMapper.map(skillDto, Skill.class);
-    }
+@Mapper
+public interface SkillMapper {
 
-    // convert Entity to Dto
-    public SkillDto from(Skill skill) {
-        return modelMapper.map(skill, SkillDto.class);
-    }
+    SkillMapper INSTANCE = Mappers.getMapper(SkillMapper.class);
+
+    SkillDto from(Skill skill);
+
+    Skill to(SkillDto skillDto);
 
 }

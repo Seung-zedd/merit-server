@@ -1,15 +1,10 @@
 package com.merit.service;
 
-import com.merit.domain.Company;
 import com.merit.domain.Contractor;
 import com.merit.domain.Project;
 import com.merit.domain.ProjectContractor;
-import com.merit.dto.ContractorDto;
 import com.merit.dto.ProjectContractorDto;
-import com.merit.dto.ProjectDto;
-import com.merit.mapper.ContractorMapper;
 import com.merit.mapper.ProjectContractorMapper;
-import com.merit.mapper.ProjectMapper;
 import com.merit.repository.CompanyRepository;
 import com.merit.repository.ContractorRepository;
 import com.merit.repository.ProjectContractorRepository;
@@ -29,7 +24,6 @@ import java.util.List;
 public class ProjectContractorService {
     private final CompanyRepository companyRepository;
     private final ProjectContractorRepository projectContractorRepository;
-    private final ProjectContractorMapper projectContractorMapper;
     private final ProjectRepository projectRepository;
     private final ContractorRepository contractorRepository;
 
@@ -38,7 +32,7 @@ public class ProjectContractorService {
     public Long create(ProjectContractorDto projectContractorDto, Long projectId, Long contractorId) {
 
         // create PC entity
-        ProjectContractor projectContractor = projectContractorMapper.to(projectContractorDto);
+        ProjectContractor projectContractor = ProjectContractorMapper.INSTANCE.to(projectContractorDto);
         ProjectContractor savedProjectContractor = projectContractorRepository.save(projectContractor);
 
         Project findProject = projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + projectId));
@@ -55,14 +49,14 @@ public class ProjectContractorService {
     // * (Read)
     public ProjectContractorDto getProjectContractor(Long id) {
         ProjectContractor projectContractor = projectContractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ProjectContractor not found with id: " + id));
-        return projectContractorMapper.from(projectContractor);
+        return ProjectContractorMapper.INSTANCE.from(projectContractor);
     }
 
     // * (ReadAll)
     public List<ProjectContractorDto> getAllProjectContractors() {
         List<ProjectContractor> projectContractors = projectContractorRepository.findAll();
         return projectContractors.stream()
-                .map(projectContractorMapper::from)
+                .map(ProjectContractorMapper.INSTANCE::from)
                 .toList();
     }
 

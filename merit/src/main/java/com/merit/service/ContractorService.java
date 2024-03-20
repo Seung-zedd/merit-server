@@ -27,21 +27,18 @@ public class ContractorService {
     private final SkillRepository skillRepository;
     private final ContractorRepository contractorRepository;
 
-    private final ContractorMapper contractorMapper;
-    private final SkillMapper skillMapper;
-
     // * (Create)Employer should be able to create an account for freelancers
     //! 연관관계 편의 메서드: ContractorSkill가 필요
     //! => Company가 Contractor를 초대하기 때문에 파이어베이스 대신 이용
     // 이미 ProjectContractorService에서 연관관계 매핑하였음
     @Transactional
-    public Long create(ContractorDto contractorDto, List<SkillDto> skillDtos) {
+    public Long createContractor(ContractorDto contractorDto, List<SkillDto> skillDtos) {
 
         // create Contractor entity
-        Contractor contractor = contractorMapper.to(contractorDto);
+        Contractor contractor = ContractorMapper.INSTANCE.to(contractorDto);
 
         List<Skill> skills = skillDtos.stream()
-                .map(skillMapper::to)
+                .map(SkillMapper.INSTANCE::to)
                 .toList();
 
         skillRepository.saveAll(skills);
@@ -57,7 +54,6 @@ public class ContractorService {
 
             contractorSkillRepository.save(contractorSkill);
         }
-        log.debug("contractorSkillRepository.size={}", contractorSkillRepository.findAll().size());
 
         return savedContractor.getId();
     }
@@ -65,14 +61,14 @@ public class ContractorService {
     // * (Read)
     public ContractorDto getContractor(Long id) {
         Contractor contractor = contractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Contractor not found with id: " + id));
-        return contractorMapper.from(contractor);
+        return ContractorMapper.INSTANCE.from(contractor);
     }
 
     // * (Read) should be able to view contractor listing
     public List<ContractorDto> getAllContractors() {
         List<Contractor> contractors = contractorRepository.findAll();
         return contractors.stream()
-                .map(contractorMapper::from)
+                .map(ContractorMapper.INSTANCE::from)
                 .toList();
     }
 
@@ -80,7 +76,7 @@ public class ContractorService {
     public List<ContractorDto> getAvailableContractors() {
         List<Contractor> allByStatus = contractorRepository.findAllByStatus(ContractorStatus.AVAILABLE);
         return allByStatus.stream()
-                .map(contractorMapper::from)
+                .map(ContractorMapper.INSTANCE::from)
                 .toList();
     }
 
@@ -137,18 +133,18 @@ public class ContractorService {
     public void deleteContractor(Long id) {
         Contractor contractor = contractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Contractor not found with id: " + id));
 
-        List<ContractorSkill> contractorSkillsToDelete = new ArrayList<>(contractor.getContractorSkills());
+        List<ContractorSkill> contractorSkillsToDelete = new ArrayList<>();
 
-        for (ContractorSkill contractorSkill : contractorSkillsToDelete) {
+        for (ContractorSkill contractorSkill : new ArrayList<>(contractor.getContractorSkills())) {
 
             Skill skill = contractorSkill.getSkill();
             contractorSkill.removeContractor(contractor);
             contractorSkill.removeSkill(skill);
+            contractorSkillsToDelete.add(contractorSkill);
         }
 
         contractorSkillRepository.deleteAll(contractorSkillsToDelete);
 
         contractorRepository.deleteById(id);
-        log.debug("ContractorSkills.size={}", contractor.getContractorSkills().size());
     }
 }

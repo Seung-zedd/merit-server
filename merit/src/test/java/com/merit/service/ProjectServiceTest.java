@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -36,9 +37,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application-test.yml")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Rollback(false)
 @Transactional
+@Rollback(false)
 @Slf4j
 class ProjectServiceTest {
 
@@ -46,13 +46,23 @@ class ProjectServiceTest {
     private ProjectRepository projectRepository;
     @Autowired
     private CompanyRepository companyRepository;
-    @Autowired
-    private CompanyMapper companyMapper;
-    @Autowired
-    private ProjectMapper projectMapper;
 
     @Autowired
     private ProjectService projectService;
+
+    @Test
+    void dtoToEntity() throws Exception {
+        //given
+        List<ProjectDto> csvProjectDtos = OpenCsv.readProjectDataFromCsv("src/test/resources/project.csv", 6);
+
+        //when
+        for (ProjectDto csvProjectDto : csvProjectDtos) {
+            Project mappedProject = ProjectMapper.INSTANCE.to(csvProjectDto);
+            log.debug("csvProjectDto={}", csvProjectDto);
+            log.debug("mappedProject={}", mappedProject);
+        }
+
+    }
 
     @Test
     @DisplayName("A project must be created and saved in the DB.")
@@ -63,7 +73,7 @@ class ProjectServiceTest {
         List<SkillDto> csvSkillDtos = OpenCsv.readSkillDataFromCsv("src/test/resources/skills.csv", 6);
         CompanyDto csvCompanyDto = OpenCsv.readCompanyDataFromCsv("src/test/resources/company.csv");
 
-        Company company = companyMapper.to(csvCompanyDto);
+        Company company = CompanyMapper.INSTANCE.to(csvCompanyDto);
         Company savedCompany = companyRepository.save(company);
 
         //when
@@ -88,7 +98,7 @@ class ProjectServiceTest {
         List<SkillDto> csvSkillDtos = OpenCsv.readSkillDataFromCsv("src/test/resources/skills.csv", 6);
         CompanyDto csvCompanyDto = OpenCsv.readCompanyDataFromCsv("src/test/resources/company.csv");
 
-        Company company = companyMapper.to(csvCompanyDto);
+        Company company = CompanyMapper.INSTANCE.to(csvCompanyDto);
         Company savedCompany = companyRepository.save(company);
 
         List<Project> savedProjects = new ArrayList<>();
@@ -117,7 +127,7 @@ class ProjectServiceTest {
         List<SkillDto> csvSkillDtos = OpenCsv.readSkillDataFromCsv("src/test/resources/skills.csv", 6);
         CompanyDto csvCompanyDto = OpenCsv.readCompanyDataFromCsv("src/test/resources/company.csv");
 
-        Company company = companyMapper.to(csvCompanyDto);
+        Company company = CompanyMapper.INSTANCE.to(csvCompanyDto);
         Company savedCompany = companyRepository.save(company);
 
         List<Project> savedProjects = new ArrayList<>();
@@ -147,7 +157,7 @@ class ProjectServiceTest {
         List<SkillDto> csvSkillDtos = OpenCsv.readSkillDataFromCsv("src/test/resources/skills.csv", 6);
         CompanyDto csvCompanyDto = OpenCsv.readCompanyDataFromCsv("src/test/resources/company.csv");
 
-        Company company = companyMapper.to(csvCompanyDto);
+        Company company = CompanyMapper.INSTANCE.to(csvCompanyDto);
         Company savedCompany = companyRepository.save(company);
 
         List<Project> savedProjects = new ArrayList<>();
@@ -173,7 +183,7 @@ class ProjectServiceTest {
                 .createdOn(LocalDate.now())
                 .modifiedOn(LocalDate.now())
                 .build();
-        Project newProject = projectMapper.to(newProjectDto);
+        Project newProject = ProjectMapper.INSTANCE.to(newProjectDto);
         Project savedProject = projectRepository.save(newProject);
 
         Long updatedProjectId = projectService.updateProject(savedProject.getId(), newProjectDto);
@@ -194,7 +204,7 @@ class ProjectServiceTest {
         List<SkillDto> csvSkillDtos = OpenCsv.readSkillDataFromCsv("src/test/resources/skills.csv", 6);
         CompanyDto csvCompanyDto = OpenCsv.readCompanyDataFromCsv("src/test/resources/company.csv");
 
-        Company company = companyMapper.to(csvCompanyDto);
+        Company company = CompanyMapper.INSTANCE.to(csvCompanyDto);
         Company savedCompany = companyRepository.save(company);
 
         List<Project> savedProjects = new ArrayList<>();

@@ -19,14 +19,13 @@ import java.util.List;
 public class SkillService {
 
     private final SkillRepository skillRepository;
-    private final SkillMapper skillMapper;
 
     // * (Create) 이미 Project, Contractor 쪽에 연관관계 편의 메서드를 작성했으므로 스킬만 만들면 된다
     @Transactional
     public Long createSkill(SkillDto skillDto) {
 
         // create Skill entity
-        Skill skill = skillMapper.to(skillDto);
+        Skill skill = SkillMapper.INSTANCE.to(skillDto);
         Skill savedSkill = skillRepository.save(skill);
 
         return savedSkill.getId();
@@ -35,14 +34,14 @@ public class SkillService {
     // * (Read) should read Skill's detail
     public SkillDto getSkill(Long id) {
         Skill skill = skillRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("SKill not found with id: " + id));
-        return skillMapper.from(skill);
+        return SkillMapper.INSTANCE.from(skill);
     }
 
     // * (Read) skill listing
     public List<SkillDto> getAllSkills() {
         List<Skill> skills = skillRepository.findAll();
         return skills.stream()
-                .map(skillMapper::from)
+                .map(SkillMapper.INSTANCE::from)
                 .toList();
     }
 

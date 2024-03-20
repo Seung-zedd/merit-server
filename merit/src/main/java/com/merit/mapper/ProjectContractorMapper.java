@@ -1,22 +1,19 @@
 package com.merit.mapper;
 
-import lombok.RequiredArgsConstructor;
 import com.merit.domain.ProjectContractor;
 import com.merit.dto.ProjectContractorDto;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
-@Component
-@RequiredArgsConstructor
-public class ProjectContractorMapper {
-    private final ModelMapper modelMapper;
+@Mapper
+public interface ProjectContractorMapper {
 
-    public ProjectContractor to(ProjectContractorDto projectContractorDto) {
-        return modelMapper.map(projectContractorDto, ProjectContractor.class);
-    }
+    ProjectContractorMapper INSTANCE = Mappers.getMapper(ProjectContractorMapper.class);
 
-    // convert Entity to Dto
-    public ProjectContractorDto from(ProjectContractor projectContractor) {
-        return modelMapper.map(projectContractor, ProjectContractorDto.class);
-    }
+    ProjectContractorDto from(ProjectContractor projectContractor);
+
+    @Mapping(target = "applicationDate", expression = "java(java.time.LocalDate.now())")
+    ProjectContractor to(ProjectContractorDto projectContractorDto);
+
 }

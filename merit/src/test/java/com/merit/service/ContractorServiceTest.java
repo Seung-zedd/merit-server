@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
@@ -28,8 +27,6 @@ import static org.assertj.core.api.Assertions.*;
 @ActiveProfiles("test")
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application-test.yml")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Rollback(false)
 @Transactional
 @Slf4j
 class ContractorServiceTest {
@@ -41,9 +38,6 @@ class ContractorServiceTest {
     @Autowired
     private SkillRepository skillRepository;
 
-    @Autowired
-    private SkillMapper skillMapper;
-
     @Test
     @DisplayName("A contractor must be created and saved in the DB.")
     void create() throws Exception, CsvValidationException {
@@ -53,7 +47,7 @@ class ContractorServiceTest {
 
         // when
         for (ContractorDto csvContractorDto : csvContractorDtos) {
-            Long savedContractorId = contractorService.create(csvContractorDto, csvSkillDtos);
+            Long savedContractorId = contractorService.createContractor(csvContractorDto, csvSkillDtos);
 
             //then
             assertThat(savedContractorId).isEqualTo(csvContractorDto.getId());
@@ -76,7 +70,7 @@ class ContractorServiceTest {
 
 
         for (ContractorDto csvContractorDto : csvContractorDtos) {
-            Long savedContractorId = contractorService.create(csvContractorDto, csvSkillDtos);
+            Long savedContractorId = contractorService.createContractor(csvContractorDto, csvSkillDtos);
 
             //when
             Contractor savedContractor = contractorRepository.findById(savedContractorId).orElse(null);
@@ -101,7 +95,7 @@ class ContractorServiceTest {
         List<ContractorDto> csvContractorDtos = OpenCsv.readContractorDataFromCsv("src/test/resources/contractor.csv", 3);
 
         for (ContractorDto csvContractorDto : csvContractorDtos) {
-            contractorService.create(csvContractorDto, csvSkillDtos);
+            contractorService.createContractor(csvContractorDto, csvSkillDtos);
         }
 
         //when
@@ -123,7 +117,7 @@ class ContractorServiceTest {
 
 
         for (ContractorDto csvContractorDto : csvContractorDtos) {
-            Long savedContractorId = contractorService.create(csvContractorDto, csvSkillDtos);
+            Long savedContractorId = contractorService.createContractor(csvContractorDto, csvSkillDtos);
 
             //when
             Contractor savedContractor = contractorRepository.findById(savedContractorId).orElse(null);
@@ -143,6 +137,7 @@ class ContractorServiceTest {
     }
 
     @Test
+    @Rollback(false)
     @DisplayName("프리랜서의 정보 및 스킬들도 업데이트되어야 한다.")
     void update() throws Exception {
 
@@ -151,7 +146,7 @@ class ContractorServiceTest {
         List<ContractorDto> csvContractorDtos = OpenCsv.readContractorDataFromCsv("src/test/resources/contractor.csv", 5);
 
         for (ContractorDto csvContractorDto : csvContractorDtos) {
-            contractorService.create(csvContractorDto, csvSkillDtos);
+            contractorService.createContractor(csvContractorDto, csvSkillDtos);
         }
 
         ContractorDto contractorDto = ContractorDto.builder()
@@ -176,18 +171,17 @@ class ContractorServiceTest {
 
         List<Skill> skills = skillRepository.findAll();
         for (Skill skill : skills) {
-            skillDtoToAdd.add(skillMapper.from(skill));
+            skillDtoToAdd.add(SkillMapper.INSTANCE.from(skill));
         }
 
         //when
-        Long updatedId = contractorService.updateContractor(csvContractorDtos.get(0).getId(), contractorDto, skillDtoToAdd);
+        Long updatedId = contractorService.updateContractor(csvContractorDtos.get(2).getId(), contractorDto, skillDtoToAdd);
 
         //then
         log.debug("csvContractorDto={}", csvContractorDtos.get(2));
     }
 
     @Test
-    @Transactional
     @DisplayName("프리랜서 계정이 삭제되어야 하고, 관련된 ContractorSkill까지 사라져야한다.")
     void delete() throws Exception {
 
@@ -198,7 +192,7 @@ class ContractorServiceTest {
         List<Contractor> savedContractors = new ArrayList<>();
 
         for (ContractorDto csvContractorDto : csvContractorDtos) {
-            Long savedContractorId = contractorService.create(csvContractorDto, csvSkillDtos);
+            Long savedContractorId = contractorService.createContractor(csvContractorDto, csvSkillDtos);
 
             Contractor savedContractor = contractorRepository.findById(savedContractorId).orElse(null);
             if (savedContractor != null) {
@@ -210,9 +204,8 @@ class ContractorServiceTest {
         contractorService.deleteContractor(savedContractors.get(0).getId());
 
         //then
-        Optional<Contractor> deletedContractor = contractorRepository.findById(savedContractors.get(2).getId());
+        Optional<Contractor> deletedContractor = contractorRepository.findById(savedContractors.get(0).getId());
         assertThat(deletedContractor).isEmpty();
     }
-
 
 }

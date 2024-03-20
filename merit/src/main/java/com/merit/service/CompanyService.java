@@ -21,13 +21,11 @@ public class CompanyService {
 
     private final CompanyRepository companyRepository;
 
-    private final CompanyMapper companyMapper;
-
     // * (Create)Employer should be able to log in.
     @Transactional
     public Long createCompany(CompanyDto companyDto) {
 
-        Company company = companyMapper.to(companyDto);
+        Company company = CompanyMapper.INSTANCE.to(companyDto);
         Company savedCompany = companyRepository.save(company);
 
         return savedCompany.getId();
@@ -36,14 +34,14 @@ public class CompanyService {
     // * (Read) should read Company's detail
     public CompanyDto getCompany(Long id) {
         Company company = companyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + id));
-        return companyMapper.from(company);
+        return CompanyMapper.INSTANCE.from(company);
     }
 
     // * (Read) should be able to view company listing
     public List<CompanyDto> getAllCompanies() {
         List<Company> companies = companyRepository.findAll();
         return companies.stream()
-                .map(companyMapper::from)
+                .map(CompanyMapper.INSTANCE::from)
                 .toList();
     }
 

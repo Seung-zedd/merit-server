@@ -15,7 +15,6 @@ import com.merit.mapper.SkillMapper;
 import com.merit.repository.CompanyRepository;
 import com.merit.repository.ProjectRepository;
 import com.merit.repository.ProjectSkillRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +34,6 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectSkillRepository projectSkillRepository;
 
-    private final ProjectMapper projectMapper;
-    private final SkillMapper skillMapper;
-
     // * (Create)Employer should be able to create a new project
     // Return: projectId so that Employer can identify each project
     @Transactional
@@ -47,7 +43,7 @@ public class ProjectService {
 
         // feat: Convert the Dto received from the user into a project entity and save it in the repository
         List<Skill> skills = skillDtos.stream()
-                .map(skillMapper::to)
+                .map(SkillMapper.INSTANCE::to)
                 .toList();
 
         skillRepository.saveAll(skills);
@@ -78,7 +74,7 @@ public class ProjectService {
     // 파라미터의 id는 Controller에서 @PathVariable로 받을 예정
     public ProjectDto getProject(Long id) {
         Project project = projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + id));
-        return projectMapper.from(project);
+        return ProjectMapper.INSTANCE.from(project);
     }
 
     // * (Read)Employer should be able to view project listing
@@ -86,7 +82,7 @@ public class ProjectService {
     public List<ProjectDto> getAllProjects() {
         List<Project> projects = projectRepository.findAll();
         return projects.stream()
-                .map(projectMapper::from)
+                .map(ProjectMapper.INSTANCE::from)
                 .toList();
     }
 
@@ -141,8 +137,6 @@ public class ProjectService {
 
         // 프로젝트를 삭제합니다.
         projectRepository.deleteById(id);
-        // 프로젝트와 연관된 projectSkill도 실제로 삭제됬는지 log.debug()로 확인
-        log.debug("ProjectSkills.size={}", project.getProjectSkills().size());
     }
 
     public void changeStatus(ProjectDto projectDto) {
