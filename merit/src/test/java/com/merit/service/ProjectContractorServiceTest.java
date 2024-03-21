@@ -1,16 +1,12 @@
 package com.merit.service;
 
 import com.merit.domain.*;
-import com.merit.dto.CompanyDto;
 import com.merit.dto.ContractorDto;
 import com.merit.dto.ProjectContractorDto;
 import com.merit.dto.ProjectDto;
-import com.merit.mapper.CompanyMapper;
 import com.merit.mapper.ContractorMapper;
-import com.merit.mapper.ProjectContractorMapper;
 import com.merit.mapper.ProjectMapper;
 import com.merit.openCsv.OpenCsv;
-import com.merit.repository.CompanyRepository;
 import com.merit.repository.ContractorRepository;
 import com.merit.repository.ProjectContractorRepository;
 import com.merit.repository.ProjectRepository;
@@ -20,7 +16,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
@@ -34,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -84,46 +78,17 @@ class ProjectContractorServiceTest {
             long projectId = projectIds.get(i);
             long contractorId = contractorIds.get(i);
 
-            projectContractorService.create(csvProjectContractorDto, projectId, contractorId);
+            projectContractorService.createProjectContractor(csvProjectContractorDto, projectId, contractorId);
         }
     }
 
     @Test
     void create() throws Exception
     {
-        //given
-        List<Long> projectIds = new ArrayList<>();
-        List<Long> contractorIds = new ArrayList<>();
+        List<ProjectContractor> projectContractors = projectContractorRepository.findAll();
 
-        List<ProjectDto> csvProjectDtos = OpenCsv.readProjectDataFromCsv("src/test/resources/project.csv", 6);
-        List<ContractorDto> csvContractorDtos = OpenCsv.readContractorDataFromCsv("src/test/resources/contractor.csv", 6);
-
-        List<ProjectContractorDto> csvProjectContractorDtos = OpenCsv.readProjectContractorDataFromCsv("src/test/resources/project_contractor_bridge.csv", 6);
-
-        for (ContractorDto csvContractorDto : csvContractorDtos) {
-            Contractor contractor = ContractorMapper.INSTANCE.to(csvContractorDto);
-            Contractor savedContractor = contractorRepository.saveAndFlush(contractor);
-
-            contractorIds.add(savedContractor.getId());
-        }
-
-
-
-        for (ProjectDto csvProjectDto : csvProjectDtos) {
-            Project project = ProjectMapper.INSTANCE.to(csvProjectDto);
-            Project savedProject = projectRepository.saveAndFlush(project);
-
-            projectIds.add(savedProject.getId());
-        }
-
-        //when
-        for (int i = 0; i < csvProjectContractorDtos.size(); i++) {
-            ProjectContractorDto csvProjectContractorDto = csvProjectContractorDtos.get(i);
-            long projectId = projectIds.get(i);
-            long contractorId = contractorIds.get(i);
-
-            projectContractorService.create(csvProjectContractorDto, projectId, contractorId);
-        }
+        //then
+        log.debug("projectContractors={}", projectContractors);
     }
 
     @Test

@@ -139,10 +139,6 @@ public class ProjectService {
         projectRepository.deleteById(id);
     }
 
-    public void changeStatus(ProjectDto projectDto) {
-
-    }
-
     private Project getProjectEntity(ProjectDto projectDto) {
 
         return Project.builder()

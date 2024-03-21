@@ -27,6 +27,7 @@ public class ProjectContractor {
     private Contractor contractor;
 
     @Enumerated(EnumType.STRING)
+    @Setter
     private ProjectContractorStatus status;
 
     private String comment;
@@ -36,6 +37,10 @@ public class ProjectContractor {
     private String expectedPayCurrency;
     private int expectedHoursPerWeek;
     private LocalDate applicationDate;
+
+    public void changeStatus(ProjectContractorStatus newStatus) {
+        this.status = newStatus;
+    }
 
     public void addProject(Project project) {
         this.project = project;

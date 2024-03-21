@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.merit.dto.ContractorDto;
 import com.merit.mapper.ContractorMapper;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,17 +24,21 @@ import static graphql.introspection.IntrospectionQueryBuilder.build;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ContractorService {
+    private final CompanyRepository companyRepository;
 
     private final ContractorSkillRepository contractorSkillRepository;
     private final SkillRepository skillRepository;
     private final ContractorRepository contractorRepository;
 
+    //used for SMTP service
+    private final ConfirmationTokenRepository confirmationTokenRepository;
+    private final EmailService emailService;
+
     // * (Create)Employer should be able to create an account for freelancers
-    //! 연관관계 편의 메서드: ContractorSkill가 필요
-    //! => Company가 Contractor를 초대하기 때문에 파이어베이스 대신 이용
+    //! this should be called after accepting invitation email, that is, if the CompanyStatus set onto ACCEPTED
     // 이미 ProjectContractorService에서 연관관계 매핑하였음
     @Transactional
-    public Long createContractor(ContractorDto contractorDto, List<SkillDto> skillDtos) {
+    public ResponseEntity<?> createContractor(ContractorDto contractorDto, List<SkillDto> skillDtos, Long companyId) {
 
         // create Contractor entity
         Contractor contractor = ContractorMapper.INSTANCE.to(contractorDto);
@@ -43,6 +49,11 @@ public class ContractorService {
 
         skillRepository.saveAll(skills);
         contractor.setStatus(ContractorStatus.AVAILABLE);
+
+        // verify if the contractorEmail is already in use
+        if (contractorRepository.existsByContractorEmail(contractor.getContractorEmail())) {
+            return ResponseEntity.badRequest().body("Error: Email is already in use!");
+        }
 
         Contractor savedContractor = contractorRepository.save(contractor);
 
@@ -55,7 +66,37 @@ public class ContractorService {
             contractorSkillRepository.save(contractorSkill);
         }
 
-        return savedContractor.getId();
+        // Contractor-Company, add Contractor account after confirming Verification mail
+        Company company = companyRepository.findById(companyId).orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + companyId));
+        savedContractor.addCompany(company);
+
+        // about EmailService
+        ConfirmationTokenEntity confirmationToken = new ConfirmationTokenEntity(contractor);
+
+        confirmationTokenRepository.save(confirmationToken);
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(contractor.getContractorEmail());
+        mailMessage.setSubject("Complete Registration!");
+        mailMessage.setText("To confirm your account, please click here : "
+                +"http://localhost:8080/confirm-account?token="+confirmationToken.getConfirmationToken());
+        emailService.sendEmail(mailMessage);
+
+        System.out.println("Confirmation Token: " + confirmationToken.getConfirmationToken());
+
+        return ResponseEntity.ok("Verify email by the link sent on your email address");
+    }
+
+    // * (Confirmation)
+    public ResponseEntity<?> confirmEmail(String confirmationToken) {
+        ConfirmationTokenEntity token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
+
+        if (token != null) {
+            Contractor contractor = contractorRepository.findByContractorEmailIgnoreCase(token.getContractor().getContractorEmail());
+            contractor.setEnabled(true);
+            return ResponseEntity.ok("Email verified successfully!");
+        }
+        return ResponseEntity.badRequest().body("Error: Couldn't verify email");
     }
 
     // * (Read)
@@ -110,7 +151,7 @@ public class ContractorService {
 
         Contractor updatedContractor = contractor.toBuilder()
                 .name(contractorDto.getName())
-                .email(contractorDto.getEmail())
+                .contractorEmail(contractorDto.getContractorEmail())
                 .website(contractorDto.getWebsite())
                 .status(contractorDto.getStatus())
                 .address(updatedAddress)
@@ -130,7 +171,7 @@ public class ContractorService {
     // * (Delete)
     //? 삭제는 ProjectService 참조할 것 <- Contractor-skill 연관관계 제거
     @Transactional
-    public void deleteContractor(Long id) {
+    public void deleteContractor(Long id, Long companyId) {
         Contractor contractor = contractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Contractor not found with id: " + id));
 
         List<ContractorSkill> contractorSkillsToDelete = new ArrayList<>();
@@ -144,6 +185,9 @@ public class ContractorService {
         }
 
         contractorSkillRepository.deleteAll(contractorSkillsToDelete);
+
+        Company company = companyRepository.findById(companyId).orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + companyId));
+        contractor.removeCompany(company);
 
         contractorRepository.deleteById(id);
     }

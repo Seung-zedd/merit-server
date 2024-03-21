@@ -1,5 +1,6 @@
 package com.merit.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,7 +24,7 @@ public class Contractor extends BaseEntity{
     @Column(name = "CONTRACTOR_NAME", unique = true, nullable = false)
     private String name;
     @Column(nullable = false)
-    private String email;
+    private String contractorEmail;
     private String website;
 
     @Enumerated(EnumType.STRING)
@@ -41,10 +42,10 @@ public class Contractor extends BaseEntity{
 
     private int experience;
 
-    @OneToMany(mappedBy = "contractor")
-    @JsonManagedReference
-    @Builder.Default
-    private List<CompanyContractor> companyContractors = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @JoinColumn(name = "COMPANY_ID")
+    private Company company;
 
     private int expectedPay;
     private String expectedPayCurrency;
@@ -56,6 +57,9 @@ public class Contractor extends BaseEntity{
     @Embedded
     private Image avatar;
 
+    @Setter
+    private boolean isEnabled; //this will be used for verification mail
+
     // *feat: this will be used our MVP proudct as well as database
     // the Contractor can update their projects having been worked on our software
     @OneToMany(mappedBy = "contractor")
@@ -63,12 +67,33 @@ public class Contractor extends BaseEntity{
     @Builder.Default
     private List<ProjectContractor> projectContractors = new ArrayList<>();
 
+    public Contractor(String name, String contractorEmail, boolean isEnabled) {
+        this.name = name;
+        this.contractorEmail = contractorEmail;
+        this.isEnabled = isEnabled;
+    }
+
+    public void addCompany(Company company) {
+        this.company = company;
+        company.getContractors().add(this);
+    }
+
+    public void removeCompany(Company company) {
+        this.company = null;
+        company.getContractors().remove(this);
+    }
+
+    // * Contractor can change their status when they want to
+    public void changeStatus(ContractorStatus newStatus) {
+        this.setStatus(newStatus);
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" +
                 "id = " + id + ", " +
                 "name = " + name + ", " +
-                "email = " + email + ", " +
+                "email = " + contractorEmail + ", " +
                 "website = " + website + ", " +
                 "status = " + status + ", " +
                 "address = " + address + ", " +

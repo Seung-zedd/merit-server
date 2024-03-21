@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "COMPANIES")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(toBuilder = true)
@@ -32,6 +31,7 @@ public class Company extends BaseEntity{
     private String about;
 
     @Enumerated(EnumType.STRING)
+    @Setter
     private CompanyStatus status;
 
     @OneToMany(mappedBy = "company")
@@ -42,7 +42,12 @@ public class Company extends BaseEntity{
     @OneToMany(mappedBy = "company")
     @JsonManagedReference
     @Builder.Default
-    private List<CompanyContractor> companyContractors = new ArrayList<>();
+    private List<Contractor> contractors = new ArrayList<>();
+
+    // * INVITATION_SENT: gmail SMTP 서비스를 사용해서 메일을 보낸 다음에 상태를 변경시켜야함
+    public void changeStatus(CompanyStatus newStatus) {
+        this.setStatus(newStatus);
+    }
 
     @Override
     public String toString() {

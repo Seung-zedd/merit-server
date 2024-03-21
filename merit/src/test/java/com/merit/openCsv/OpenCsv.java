@@ -3,7 +3,6 @@ package com.merit.openCsv;
 import com.merit.domain.*;
 import com.merit.dto.*;
 import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.FileReader;
@@ -78,7 +77,7 @@ public class OpenCsv {
                 ContractorDto contractorDto = ContractorDto.builder()
                         .id(Long.parseLong(nextLine[0]))
                         .name(nextLine[1])
-                        .email(nextLine[2])
+                        .contractorEmail(nextLine[2])
                         .website(nextLine[3])
                         .status(ContractorStatus.valueOf(nextLine[4].toUpperCase()))
                         .address(parseAddress(nextLine[5]))

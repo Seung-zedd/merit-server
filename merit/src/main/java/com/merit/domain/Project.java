@@ -43,6 +43,7 @@ public class Project extends BaseEntity{
     private int salaryRange;
 
     @Enumerated(EnumType.STRING)
+    @Setter
     private ProjectStatus status;
 
     private String createdBy;
@@ -56,6 +57,11 @@ public class Project extends BaseEntity{
     @JsonManagedReference // mappedBy 있는 곳에 붙임
     @Builder.Default
     private List<ProjectContractor> projectContractors = new ArrayList<>();
+
+    // 특정 기간이 지나면 project의 상태를 CLOSED로 변경할 것
+    public void changeStatus(ProjectStatus newStatus) {
+        this.setStatus(newStatus);
+    }
 
     public void addCompany(Company company) {
         this.company = company;

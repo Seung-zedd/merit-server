@@ -1,11 +1,8 @@
 package com.merit.service;
 
-import com.merit.domain.Contractor;
-import com.merit.domain.Project;
-import com.merit.domain.ProjectContractor;
+import com.merit.domain.*;
 import com.merit.dto.ProjectContractorDto;
 import com.merit.mapper.ProjectContractorMapper;
-import com.merit.repository.CompanyRepository;
 import com.merit.repository.ContractorRepository;
 import com.merit.repository.ProjectContractorRepository;
 import com.merit.repository.ProjectRepository;
@@ -22,18 +19,20 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProjectContractorService {
-    private final CompanyRepository companyRepository;
+
     private final ProjectContractorRepository projectContractorRepository;
     private final ProjectRepository projectRepository;
     private final ContractorRepository contractorRepository;
 
     // * (create) Contractor and Project entity is already created
     @Transactional
-    public Long create(ProjectContractorDto projectContractorDto, Long projectId, Long contractorId) {
+    public void createProjectContractor(ProjectContractorDto projectContractorDto, Long projectId, Long contractorId) {
 
         // create PC entity
         ProjectContractor projectContractor = ProjectContractorMapper.INSTANCE.to(projectContractorDto);
+        projectContractor.setStatus(ProjectContractorStatus.PENDING);
         ProjectContractor savedProjectContractor = projectContractorRepository.save(projectContractor);
+
 
         Project findProject = projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + projectId));
 
@@ -43,7 +42,6 @@ public class ProjectContractorService {
         savedProjectContractor.addProject(findProject);
         savedProjectContractor.addContractor(findContractor);
 
-        return savedProjectContractor.getId();
     }
 
     // * (Read)
@@ -77,9 +75,31 @@ public class ProjectContractorService {
         return saved.getId();
     }
 
+    @Transactional
+    public void approved(Long id) {
+        ProjectContractor findProjectContractor = projectContractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ProjectContractor not found with id: " + id));
+        findProjectContractor.setStatus(ProjectContractorStatus.ACCEPTED);
+        findProjectContractor.getContractor().setStatus(ContractorStatus.ENGAGED);
+    }
+
+    @Transactional
+    public void rejected(Long id) {
+        ProjectContractor findProjectContractor = projectContractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ProjectContractor not found with id: " + id));
+
+        findProjectContractor.setStatus(ProjectContractorStatus.REJECTED);
+        findProjectContractor.getProject().setStatus(ProjectStatus.ARCHIVED);
+    }
+
     // * (Delete)
     @Transactional
     public void deleteProjectContractor(Long id) {
+        ProjectContractor findProjectContractor = projectContractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ProjectContractor not found with id: " + id));
+        Contractor contractor = findProjectContractor.getContractor();
+        Project project = findProjectContractor.getProject();
+
+        findProjectContractor.removeContractor(contractor);
+        findProjectContractor.removeProject(project);
+
         projectContractorRepository.deleteById(id);
     }
 }

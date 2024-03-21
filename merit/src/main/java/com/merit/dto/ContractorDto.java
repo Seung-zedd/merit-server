@@ -15,7 +15,7 @@ public class ContractorDto {
 
     private Long id;
     private String name;
-    private String email;
+    private String contractorEmail;
     private String website;
     private ContractorStatus status;
     private Address address;
