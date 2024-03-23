@@ -1,0 +1,8 @@
+type Skill {
+    id: ID!
+    name: String!
+    skillsDescription: String
+    contractorSkills: [ContractorSkill!]!
+    projectSkills: [ProjectSkill!]!
+}
+

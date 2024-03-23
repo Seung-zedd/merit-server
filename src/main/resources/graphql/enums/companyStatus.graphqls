@@ -1,0 +1,3 @@
+enum CompanyStatus {
+    ACTIVE, INACTIVE, INVITATION_SENT
+}

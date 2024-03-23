@@ -1,0 +1,3 @@
+enum ProjectStatus {
+    OPEN, CLOSED, COMPLETED, ARCHIVED
+}

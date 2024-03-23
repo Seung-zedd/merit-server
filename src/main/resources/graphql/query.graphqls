@@ -1,0 +1,4 @@
+
+type Query {
+    project(id: ID): Project
+}

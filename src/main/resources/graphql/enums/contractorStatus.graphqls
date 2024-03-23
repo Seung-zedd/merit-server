@@ -1,0 +1,3 @@
+enum ContractorStatus {
+    AVAILABLE, UNAVAILABLE, ENGAGED
+}

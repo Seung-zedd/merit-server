@@ -1,0 +1,5 @@
+type ContractorSkill {
+    id: ID!
+    skill: Skill
+    contractor: Contractor
+}

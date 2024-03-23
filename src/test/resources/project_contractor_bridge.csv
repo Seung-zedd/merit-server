@@ -1,0 +1,37 @@
+id,status,comment,rate_type,expected_rate,expected_hours_per_week,expected_rate_currency,expected_rate_exchange_rate,application_date
+1,pending,Looking forward to working together,hourly,52.1,34,USD,1.29,2023-02-26
+2,rejected,Looking forward to working together,fixed,28.74,49,GBP,1.38,2023-02-18
+3,accepted,Looking forward to working together,fixed,78.27,34,GBP,1.05,2023-01-31
+4,rejected,Skills not a perfect match,hourly,24.27,11,EUR,1.18,2023-02-08
+5,rejected,Considering other applicants,hourly,48.71,20,GBP,1.19,2023-01-14
+6,pending,Skills not a perfect match,fixed,37.32,28,GBP,1.3,2023-01-10
+7,accepted,Very impressed with the portfolio,hourly,32.79,15,USD,1.41,2023-01-08
+8,accepted,Considering other applicants,fixed,62.85,46,USD,1.25,2023-02-10
+9,accepted,Very impressed with the portfolio,hourly,95.71,10,USD,1.45,2023-01-09
+10,rejected,Skills not a perfect match,fixed,36.41,39,EUR,1.09,2023-01-16
+11,accepted,Very impressed with the portfolio,fixed,73.28,7,EUR,1.44,2023-01-18
+12,pending,Considering other applicants,fixed,87.87,37,GBP,1.15,2023-01-03
+13,pending,Very impressed with the portfolio,hourly,24.74,12,USD,1.08,2023-01-23
+14,accepted,Skills not a perfect match,hourly,27.03,8,USD,1.21,2023-02-25
+15,pending,Very impressed with the portfolio,fixed,92.21,49,USD,1.04,2023-01-09
+16,pending,Very impressed with the portfolio,fixed,51.55,39,EUR,1.23,2023-01-16
+17,accepted,Very impressed with the portfolio,hourly,95.8,14,USD,1.33,2023-02-01
+18,rejected,Very impressed with the portfolio,fixed,66.88,28,USD,1.06,2023-01-22
+19,pending,Looking forward to working together,hourly,50.9,33,USD,1.24,2023-01-21
+20,accepted,Considering other applicants,fixed,37.45,36,EUR,1.15,2023-02-11
+21,pending,Skills not a perfect match,hourly,59.85,11,GBP,1.35,2023-02-20
+22,pending,Very impressed with the portfolio,hourly,74.43,34,EUR,1.39,2023-01-29
+23,rejected,Skills not a perfect match,hourly,71.89,50,EUR,1.06,2023-01-15
+24,rejected,Considering other applicants,hourly,79.21,3,USD,1.37,2023-01-10
+25,accepted,Considering other applicants,fixed,93.98,29,GBP,1.35,2023-02-04
+26,accepted,Very impressed with the portfolio,hourly,23.21,32,USD,1.32,2023-01-05
+27,accepted,Very impressed with the portfolio,hourly,42.76,33,GBP,1.21,2023-02-25
+28,rejected,Looking forward to working together,hourly,76.88,12,EUR,1.14,2023-02-13
+29,accepted,Skills not a perfect match,hourly,99.25,10,USD,1.15,2023-02-23
+30,accepted,Very impressed with the portfolio,hourly,83.72,48,EUR,1.31,2023-01-19
+31,pending,Considering other applicants,fixed,75.38,7,EUR,1.42,2023-01-17
+32,pending,Looking forward to working together,hourly,71.06,16,EUR,1,2023-02-13
+33,accepted,Looking forward to working together,fixed,71.32,20,EUR,1.29,2023-01-31
+34,rejected,Skills not a perfect match,fixed,31.67,20,USD,1.02,2023-02-02
+35,pending,Very impressed with the portfolio,hourly,25.21,33,USD,1.13,2023-01-29
+36,rejected,Skills not a perfect match,fixed,42.38,39,EUR,1.17,2023-01-22

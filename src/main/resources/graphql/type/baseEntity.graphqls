@@ -1,0 +1,6 @@
+scalar Date
+
+interface baseEntity {
+    createdOn: Date
+    modifiedOn: Date
+}

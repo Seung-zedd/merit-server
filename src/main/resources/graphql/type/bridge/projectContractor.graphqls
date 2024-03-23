@@ -1,0 +1,6 @@
+type ProjectContractor {
+    id: ID!
+    project: Project
+    contractor: Contractor
+    status: ProjectContractorStatus
+}

@@ -1,0 +1,15 @@
+type Company implements baseEntity{
+    id: ID!
+    name: String!
+    email: String!
+    website: String
+    contactNumber: String
+    address: Address
+    about: String
+    status: CompanyStatus!
+    projects: [Project!]!
+    contractors: [Contractor!]!
+    createdOn: Date
+    modifiedOn: Date
+}
+
