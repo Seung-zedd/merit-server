@@ -1,3 +1,0 @@
-type PdfDocument {
-    pdfFileName: String!
-}

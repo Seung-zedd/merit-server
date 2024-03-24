@@ -83,7 +83,7 @@ public class OpenCsv {
                 ContractorDto contractorDto = ContractorDto.builder()
                         .id(Long.parseLong(nextLine[0]))
                         .name(nextLine[1])
-                        .contractorEmail(nextLine[2])
+                        .email(nextLine[2])
                         .website(nextLine[3])
                         .status(ContractorStatus.valueOf(nextLine[4].toUpperCase()))
                         .address(parseAddress(nextLine[5]))

@@ -1,4 +1,4 @@
-package com.merit.domain;
+package com.merit.domain.verification;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,23 +11,23 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"confirmationToken", "createdDate"})
 @Getter
+@Setter
 public class ConfirmationTokenEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long tokenId;
-
     private String confirmationToken;
-
     private LocalDateTime createdDate;
 
-    @OneToOne(targetEntity = Contractor.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "CONTRACTOR_ID")
-    private Contractor contractor;
+    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false, name = "USER_ID")
+    private User user;
 
-    public ConfirmationTokenEntity(Contractor contractor) {
-        this.contractor = contractor;
-        this.confirmationToken = UUID.randomUUID().toString();
+    public ConfirmationTokenEntity(User user) {
+        this.user = user;
+        confirmationToken = UUID.randomUUID().toString();
         createdDate = LocalDateTime.now();
     }
 

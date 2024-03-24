@@ -1,5 +1,6 @@
 package com.merit.dto;
 
+import io.leangen.graphql.annotations.types.GraphQLType;
 import lombok.*;
 import com.merit.domain.enums.ProjectContractorStatus;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@GraphQLType
 public class ProjectContractorDto {
 
     private Long id;

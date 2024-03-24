@@ -1,0 +1,49 @@
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/merit?serverTimezone=UTC-4
+    username: ${datasource.username}
+    password: ${datasource.password}
+  jpa:
+    hibernate:
+      ddl-auto: validate # 운영 서버에서는 validate으로 바꿀 것!
+      naming:
+        physical-strategy: com.merit.configuration.CamelCaseToSnakeAndUpperCaseStrategy
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+  graphql:
+    schema:
+      printer:
+        enabled: true # # 이 설정 시 jpa에 show-sql 같이 graphql 쿼리를 출력해 줍니다.
+  security:
+    user:
+      name: ${security.user.name}
+      password: ${security.user.password}
+
+
+  ###### Email Properties ######
+  #smtp mail properties
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail.username}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+graphql:
+  spqr:
+    gui:
+      enabled: true # 이 설정 시 포스트맨 대신 서버 자체에서 GUI 테스트 가능
+
+logging:
+  level:
+    org.hibernate.sql: debug
+

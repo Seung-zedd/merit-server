@@ -12,8 +12,4 @@ public interface ContractorRepository extends JpaRepository<Contractor, Long> {
     @Query("SELECT c FROM Contractor c WHERE c.status = :status")
     List<Contractor> findAllByStatus(ContractorStatus status);
 
-    Contractor findByContractorEmailIgnoreCase(String emailId);
-
-    Boolean existsByContractorEmail(String email);
-
 }

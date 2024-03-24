@@ -1,3 +1,0 @@
-enum ProjectContractorStatus {
-    ACCEPTED, REJECTED, PENDING
-}

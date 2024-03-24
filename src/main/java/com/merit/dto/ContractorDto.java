@@ -4,6 +4,7 @@ import com.merit.domain.embedded.Address;
 import com.merit.domain.embedded.Image;
 import com.merit.domain.embedded.PdfDocument;
 import com.merit.domain.enums.ContractorStatus;
+import io.leangen.graphql.annotations.types.GraphQLType;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -14,11 +15,12 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@GraphQLType
 public class ContractorDto {
 
     private Long id;
     private String name;
-    private String contractorEmail;
+    private String email;
     private String website;
     private ContractorStatus status;
     private Address address;

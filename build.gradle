@@ -29,16 +29,13 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-security"
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	// 검증 디펜던시
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	// p6spy 디펜던시 (쿼리 파라미터 출력)
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
-	//graphql
-	implementation 'org.springframework.boot:spring-boot-starter-graphql'
-	implementation 'com.graphql-java-kickstart:playground-spring-boot-starter:5.10.0'
+	// graphql
+	implementation 'com.graphql-java-kickstart:graphql-spring-boot-starter:15.1.0'
 	implementation 'com.graphql-java-kickstart:graphql-java-tools:13.1.1'
-	//for BaseEntity schema
-	implementation 'com.graphql-java:graphql-java-extended-scalars:21.0'
+	// for using graphql without making any schema file
+	implementation 'io.leangen.graphql:graphql-spqr-spring-boot-starter:1.0.1'
 
 	compileOnly 'org.projectlombok:lombok'
 	compileJava {

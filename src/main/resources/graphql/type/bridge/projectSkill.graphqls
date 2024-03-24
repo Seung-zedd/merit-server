@@ -1,6 +1,0 @@
-type ProjectSkill {
-    id: ID!
-    project: Project
-    skill: Skill
-    required: Boolean
-}

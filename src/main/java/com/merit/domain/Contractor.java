@@ -29,7 +29,7 @@ public class Contractor extends BaseEntity{
     @Column(name = "CONTRACTOR_NAME", unique = true, nullable = false)
     private String name;
     @Column(nullable = false)
-    private String contractorEmail;
+    private String email;
     private String website;
 
     @Enumerated(EnumType.STRING)
@@ -41,17 +41,10 @@ public class Contractor extends BaseEntity{
     private String contactNumber;
 
     @OneToMany(mappedBy = "contractor")
-    @JsonManagedReference
     @Builder.Default
     private List<ContractorSkill> contractorSkills = new ArrayList<>();
 
     private int experience;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
-    @JoinColumn(name = "COMPANY_ID")
-    private Company company;
-
     private int expectedPay;
     private String expectedPayCurrency;
 
@@ -62,21 +55,16 @@ public class Contractor extends BaseEntity{
     @Embedded
     private Image avatar;
 
-    @Setter
-    private boolean isEnabled; //this will be used for verification mail
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "COMPANY_ID")
+    @JsonBackReference // toString 순환참조 방지 위해 연관관계의 주인이 되는 엔티티에 붙임
+    private Company company;
 
     // *feat: this will be used our MVP proudct as well as database
     // the Contractor can update their projects having been worked on our software
     @OneToMany(mappedBy = "contractor")
-    @JsonManagedReference
     @Builder.Default
     private List<ProjectContractor> projectContractors = new ArrayList<>();
-
-    public Contractor(String name, String contractorEmail, boolean isEnabled) {
-        this.name = name;
-        this.contractorEmail = contractorEmail;
-        this.isEnabled = isEnabled;
-    }
 
     public void addCompany(Company company) {
         this.company = company;
@@ -93,20 +81,4 @@ public class Contractor extends BaseEntity{
         this.setStatus(newStatus);
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + id + ", " +
-                "name = " + name + ", " +
-                "email = " + contractorEmail + ", " +
-                "website = " + website + ", " +
-                "status = " + status + ", " +
-                "address = " + address + ", " +
-                "contactNumber = " + contactNumber + ", " +
-                "experience = " + experience + ", " +
-                "expectedPay = " + expectedPay + ", " +
-                "expectedPayCurrency = " + expectedPayCurrency + ", " +
-                "resume = " + resume + ", " +
-                "avatar = " + avatar + ")";
-    }
 }

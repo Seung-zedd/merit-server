@@ -43,7 +43,6 @@ public class Company extends BaseEntity{
     private List<Project> projects = new ArrayList<>();
 
     @OneToMany(mappedBy = "company")
-    @JsonManagedReference
     @Builder.Default
     private List<Contractor> contractors = new ArrayList<>();
 
@@ -52,18 +51,4 @@ public class Company extends BaseEntity{
         this.setStatus(newStatus);
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + getId() + ", " +
-                "createdOn = " + getCreatedOn() + ", " +
-                "modifiedOn = " + getModifiedOn() + ", " +
-                "name = " + getName() + ", " +
-                "email = " + getEmail() + ", " +
-                "website = " + getWebsite() + ", " +
-                "contactNumber = " + getContactNumber() + ", " +
-                "address = " + getAddress() + ", " +
-                "about = " + getAbout() + ", " +
-                "status = " + getStatus() + ")";
-    }
 }
