@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class UserServiceImpl implements UserService{
     private final EmailService emailService;
 
     @Override
+    @Transactional
     public ResponseEntity<?> saveUser(User user) {
 
         if (Boolean.TRUE.equals(userRepository.existsByUserEmail(user.getUserEmail()))) {
@@ -45,6 +47,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> confirmEmail(String confirmationToken) {
         ConfirmationTokenEntity token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
 
@@ -53,8 +56,10 @@ public class UserServiceImpl implements UserService{
             User user = userRepository.findByUserEmailIgnoreCase(token.getUser().getUserEmail());
             user.setEnabled(true);
             userRepository.save(user);
+            log.debug("isEnabled={}", user.isEnabled());
             return ResponseEntity.ok("Email verified successfully!");
         }
+
         return ResponseEntity.badRequest().body("Error: Couldn't verify email");
     }
 }

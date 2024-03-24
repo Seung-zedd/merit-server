@@ -3,6 +3,9 @@ package com.merit.service;
 import com.merit.domain.bridge.ProjectSkill;
 import com.merit.domain.enums.ProjectStatus;
 import com.merit.repository.SkillRepository;
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +28,7 @@ import java.util.Random;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@GraphQLApi
 public class ProjectService {
 
     private final CompanyRepository companyRepository;
@@ -35,6 +39,7 @@ public class ProjectService {
     // * (Create)Employer should be able to create a new project
     // Return: projectId so that Employer can identify each project
     @Transactional
+    @GraphQLMutation(name = "createProject")
     public Long createProject(ProjectDto projectDto, List<SkillDto> skillDtos, Long companyId) {
         // create Project entity based on ProjectDto
         Project project = getProjectEntity(projectDto);
@@ -70,6 +75,7 @@ public class ProjectService {
 
     // * (Read)Freelancer should be able to view their project details
     // 파라미터의 id는 Controller에서 @PathVariable로 받을 예정
+    @GraphQLQuery(name = "getProject")
     public ProjectDto getProject(Long id) {
         Project project = projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + id));
         return ProjectMapper.INSTANCE.from(project);
@@ -77,6 +83,7 @@ public class ProjectService {
 
     // * (Read)Employer should be able to view project listing
     // will be used in Controller
+    @GraphQLQuery(name = "getAllProjects")
     public List<ProjectDto> getAllProjects() {
         List<Project> projects = projectRepository.findAll();
         return projects.stream()
@@ -87,6 +94,7 @@ public class ProjectService {
     // * (Update)
     // Return: 테스트 환경에서 확인하기 위해서 Long 타입을 반환
     @Transactional
+    @GraphQLMutation(name = "updateProject")
     public Long updateProject(Long id, ProjectDto projectDto) {
         Project project = projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + id));
 
@@ -108,6 +116,7 @@ public class ProjectService {
 
     // * (Delete)
     @Transactional
+    @GraphQLMutation(name = "deleteProject")
     public void deleteProject(Long id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + id));

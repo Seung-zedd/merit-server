@@ -8,6 +8,9 @@ import com.merit.mapper.SkillMapper;
 import com.merit.repository.ContractorRepository;
 import com.merit.repository.ContractorSkillRepository;
 import com.merit.repository.SkillRepository;
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@GraphQLApi
 public class SkillService {
     private final ContractorRepository contractorRepository;
     private final ContractorSkillRepository contractorSkillRepository;
@@ -30,6 +34,7 @@ public class SkillService {
     // * (Create)
     // 스킬을 생성하는 행위는 한번씩
     @Transactional
+    @GraphQLMutation(name = "createSkill")
     public Long createSkill(SkillDto skillDto, Long contractorId) {
 
         // create Skill entity
@@ -47,12 +52,14 @@ public class SkillService {
     }
 
     // * (Read) should read Skill's detail
+    @GraphQLQuery(name = "getSkill")
     public SkillDto getSkill(Long id) {
         Skill skill = skillRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Skill not found with id: " + id));
         return SkillMapper.INSTANCE.from(skill);
     }
 
     // * (Read) skill listing
+    @GraphQLQuery(name = "getAllSkills")
     public List<SkillDto> getAllSkills() {
         List<Skill> skills = skillRepository.findAll();
         return skills.stream()
@@ -64,6 +71,7 @@ public class SkillService {
     // should update skills only related to Contractor
     // 스킬이 업데이트되는 행위는 List<SkillDto>를 받은다음에 한번에 가능
     @Transactional
+    @GraphQLMutation(name = "updateSkill")
     public void updateSkill(Long id, List<SkillDto> skillDtos) {
         Contractor contractor = contractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Contractor not found with id: " + id));
         List<ContractorSkill> contractorSkills = contractor.getContractorSkills();
@@ -81,6 +89,7 @@ public class SkillService {
     }
 
     @Transactional
+    @GraphQLMutation(name = "deleteSkill")
     public void deleteSkill(Long skillId, Long contractorId) {
         Skill skill = skillRepository.findById(skillId).orElseThrow(() -> new EntityNotFoundException("Skill not found with id: " + skillId));
         Contractor contractor = contractorRepository.findById(contractorId).orElseThrow(() -> new EntityNotFoundException("Contractor not found with id: " + contractorId));

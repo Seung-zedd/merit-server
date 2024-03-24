@@ -5,6 +5,9 @@ import com.merit.domain.Company;
 import com.merit.dto.CompanyDto;
 import com.merit.mapper.CompanyMapper;
 import com.merit.repository.CompanyRepository;
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +19,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @Slf4j
+@GraphQLApi
 @RequiredArgsConstructor
 public class CompanyService {
 
@@ -23,6 +27,7 @@ public class CompanyService {
 
     // * (Create)Employer should be able to log in.
     @Transactional
+    @GraphQLMutation(name = "createCompany")
     public Long createCompany(CompanyDto companyDto) {
 
         Company company = CompanyMapper.INSTANCE.to(companyDto);
@@ -32,12 +37,14 @@ public class CompanyService {
     }
 
     // * (Read) should read Company's detail
+    @GraphQLQuery(name = "getCompany")
     public CompanyDto getCompany(Long id) {
         Company company = companyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + id));
         return CompanyMapper.INSTANCE.from(company);
     }
 
     // * (Read) should be able to view company listing
+    @GraphQLQuery(name = "getAllCompanies")
     public List<CompanyDto> getAllCompanies() {
         List<Company> companies = companyRepository.findAll();
         return companies.stream()
@@ -47,6 +54,7 @@ public class CompanyService {
 
     // * (Update)CQS 원칙에 의해 업데이트된 정보는 뷰에서 리다이렉트시켜서 보여주면 됨
     @Transactional
+    @GraphQLMutation(name = "updateCompany")
     public Long updateCompany(Long id, CompanyDto companyDto) {
         Company company = companyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + id));
 
@@ -73,6 +81,7 @@ public class CompanyService {
 
     // * (Delete)
     @Transactional
+    @GraphQLMutation(name = "deleteCompany")
     public void deleteCompany(Long id) {
         companyRepository.deleteById(id);
     }

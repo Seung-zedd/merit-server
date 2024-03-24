@@ -10,6 +10,9 @@ import com.merit.mapper.ProjectContractorMapper;
 import com.merit.repository.ContractorRepository;
 import com.merit.repository.ProjectContractorRepository;
 import com.merit.repository.ProjectRepository;
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,7 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional(readOnly = true)
+@GraphQLApi
 @RequiredArgsConstructor
 public class ProjectContractorService {
 
@@ -30,6 +34,7 @@ public class ProjectContractorService {
 
     // * (create) Contractor and Project entity is already created
     @Transactional
+    @GraphQLMutation(name = "createProjectContractor")
     public void createProjectContractor(ProjectContractorDto projectContractorDto, Long projectId, Long contractorId) {
 
         // create PC entity
@@ -49,12 +54,14 @@ public class ProjectContractorService {
     }
 
     // * (Read)
+    @GraphQLQuery(name = "getProjectContractor")
     public ProjectContractorDto getProjectContractor(Long id) {
         ProjectContractor projectContractor = projectContractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ProjectContractor not found with id: " + id));
         return ProjectContractorMapper.INSTANCE.from(projectContractor);
     }
 
     // * (ReadAll)
+    @GraphQLQuery(name = "getAllProjectContractors")
     public List<ProjectContractorDto> getAllProjectContractors() {
         List<ProjectContractor> projectContractors = projectContractorRepository.findAll();
         return projectContractors.stream()
@@ -64,6 +71,7 @@ public class ProjectContractorService {
 
     // * (Update)
     @Transactional
+    @GraphQLMutation(name = "updateProjectContractor")
     public Long updateProjectContractor(Long id, ProjectContractorDto projectContractorDto) {
         ProjectContractor projectContractor = projectContractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ProjectContractor not found with id: " + id));
 
@@ -80,6 +88,7 @@ public class ProjectContractorService {
     }
 
     @Transactional
+    @GraphQLMutation(name = "approved")
     public void approved(Long id) {
         ProjectContractor findProjectContractor = projectContractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ProjectContractor not found with id: " + id));
         findProjectContractor.setStatus(ProjectContractorStatus.ACCEPTED);
@@ -87,6 +96,7 @@ public class ProjectContractorService {
     }
 
     @Transactional
+    @GraphQLMutation(name = "rejected")
     public void rejected(Long id) {
         ProjectContractor findProjectContractor = projectContractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ProjectContractor not found with id: " + id));
 
@@ -96,6 +106,7 @@ public class ProjectContractorService {
 
     // * (Delete)
     @Transactional
+    @GraphQLMutation(name = "deleteProjectContractor")
     public void deleteProjectContractor(Long id) {
         ProjectContractor findProjectContractor = projectContractorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ProjectContractor not found with id: " + id));
         Contractor contractor = findProjectContractor.getContractor();
