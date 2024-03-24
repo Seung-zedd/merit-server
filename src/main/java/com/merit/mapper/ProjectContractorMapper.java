@@ -4,9 +4,10 @@ import com.merit.domain.bridge.ProjectContractor;
 import com.merit.dto.ProjectContractorDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProjectContractorMapper {
 
     ProjectContractorMapper INSTANCE = Mappers.getMapper(ProjectContractorMapper.class);
